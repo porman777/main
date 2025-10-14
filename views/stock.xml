@@ -49,7 +49,6 @@
                     <field name="debit_gl_description" readonly="True" />
                     <field name="credit_gl_code" readonly="True" />
                     <field name="credit_gl_description" readonly="True" />
-                    
                     <field name="initial_quantity" invisible="True" />
                     <field name="location_name" required="True"  readonly="False" />
                 </xpath>

@@ -4,6 +4,7 @@
         <record id="your_module_product_product_form_inherit" model="ir.ui.view">
             <field name="name">product.product.form.inherit.hide_standard_price</field>
             <field name="model">product.product</field>
+            
             <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//div[@name='standard_price_uom']" position="attributes">

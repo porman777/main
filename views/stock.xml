@@ -4,7 +4,6 @@
         <record id="your_module_product_product_form_inherit" model="ir.ui.view">
             <field name="name">product.product.form.inherit.hide_standard_price</field>
             <field name="model">product.product</field>
-            
             <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//div[@name='standard_price_uom']" position="attributes">
@@ -13,6 +12,7 @@
                 <xpath expr="//label[@for='standard_price']" position="attributes">
                     <attribute name="invisible">True</attribute>
                 </xpath>
+                
                 <xpath expr="//field[@name='default_code']" position="attributes">
                     <attribute name="readonly">True</attribute>
                 </xpath>

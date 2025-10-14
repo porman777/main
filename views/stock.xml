@@ -52,7 +52,6 @@
                     <field name="initial_quantity" invisible="True" />
                     <field name="location_name" required="True"  readonly="False" />
                 </xpath>
-                
                 <!-- Hide Existing Fields and Buttons -->
                 <xpath expr="//button[@name='action_open_documents']" position="attributes">
                     <attribute name="invisible">True</attribute>

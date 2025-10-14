@@ -1,0 +1,221 @@
+<odoo>
+    <template id="custom_report_receiving_receipt_temp">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="header">
+                    <div class="row">
+                        <div style="text-align: center; width: 100%; margin-top:50px;">
+                            <img src="/ml_development/static/src/icons/ML.jpg" style="width:40%;" /> 
+                            <p style="margin-top: 10px;">
+                                <strong style="font-size: 20px;">RECEIVING RECEIPT</strong><br/>
+                                B. Benedicto St., North Reclamation Area, Cebu City<br/>
+                                Telephone No. 380-3000 Local No. 11667
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-family: Arial, sans-serif;">
+                        <!-- Table -->
+                        <div style="padding: 1.5rem;">
+                            <table class="table table-sm o_main_table table-bordered"
+                                style="border:1px solid #dee2e6; border-collapse:collapse; width:100%; margin-top:10px;">
+                                <thead>
+                                    <!-- Supplier Info -->
+                                    <tr>
+                                        <td colspan="4" style="padding:8px;border:1px solid #dee2e6;">
+                                            RR Number: <span t-field="doc.name"/>
+                                        </td>
+                                        <td colspan="4" style="padding:8px;border:1px solid #dee2e6;">
+                                            Received From: <span t-field="doc.partner_id"/>
+                                        </td>
+                                       
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" style="padding:8px;border:1px solid #dee2e6;">
+                                           <t t-set="today" t-value="datetime.datetime.now()"/>
+                                            Date:  <t t-set="today" t-value="context_timestamp(datetime.datetime.now())"/>
+                                                    <span t-esc="today.strftime('%m/%d/%Y')"/>
+                                        </td>
+                                        <td colspan="4" style="padding:8px;border:1px solid #dee2e6;">
+                                            Address: <span t-esc="doc.address or (doc.partner_id.contact_address or '')"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" style="padding:8px;border:1px solid #dee2e6;">
+                                            Invoice No.: <span t-esc="doc.invoice_number or ''"/>
+                                        </td>
+                                        <td colspan="3" style="padding:8px;border:1px solid #dee2e6;">
+                                            P.O.: <span t-esc="doc.origin or ''"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" style="padding:8px;border:1px solid #dee2e6;">
+                                            Company: <span t-esc="doc.company_id_report.name or ''"/>
+                                        </td>
+                                        <td colspan="3" style="padding:8px;border:1px solid #dee2e6;">
+                                            Remarks: <span t-esc="doc.remarks"/>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Column Headers -->
+                                    <tr>
+                                        <th style="border:1px solid #dee2e6; background-color:#f8f9fa; text-align:center;">Demand Qty.</th>
+                                        <th style="border:1px solid #dee2e6; background-color:#f8f9fa; text-align:center;">Received Qty.</th>
+                                        <th style="border:1px solid #dee2e6; background-color:#f8f9fa; text-align:center;">Unit</th>
+                                        <th style="border:1px solid #dee2e6; background-color:#f8f9fa; text-align:center;">Description</th>
+                                        <th style="border:1px solid #dee2e6; background-color:#f8f9fa; text-align:center;">Unit Cost</th>
+                                        <th style="border:1px solid #dee2e6; background-color:#f8f9fa; text-align:center;">Tax Amount</th>
+                                        <!-- <th style="border:1px solid #dee2e6; background-color:#f8f9fa; text-align:center;">Untaxed Amount</th> -->
+                                        <th style="border:1px solid #dee2e6; background-color:#f8f9fa; text-align:center;">Total Cost</th>
+                                    </tr>
+                                </thead>
+
+                                <t t-set="total_quantity" t-value="0"/>
+                                <t t-set="total_received_quantity" t-value="0"/>
+                                <t t-set="total_unit_cost" t-value="0.00"/>
+                                <t t-set="total_untaxed_amount" t-value="0.00"/>
+                                <t t-set="total_tax_amount" t-value="0.00"/>
+                                <t t-set="total_cost" t-value="0.00"/>
+                            <tbody>
+                                <t t-foreach="doc.move_ids_without_package" t-as="line">
+                                    <tr>
+                                        <!-- Demand Qty -->
+                                        <td style="width: 5%; padding: 5px; text-align: center; border: 1px solid #dee2e6;">
+                                            <span t-esc="int(line.product_qty)"/>
+                                            <t t-set="total_quantity" t-value="total_quantity + int(line.product_qty)"/>
+                                        </td>
+
+                                        <!-- Received Qty -->
+                                        <td style="width: 5%; padding: 5px; text-align: center; border: 1px solid #dee2e6;">
+                                            <span t-esc="int(line.prev_qty)"/>
+                                            <t t-set="total_received_quantity" t-value="total_received_quantity + int(line.prev_qty)"/>
+                                        </td>
+
+                                        <!-- Unit -->
+                                        <td style="width: 10%; padding: 5px; text-align: center; border: 1px solid #dee2e6;">
+                                            <span t-field="line.product_uom.name"/>
+                                        </td>
+
+                                        <!-- Description -->
+                                        <td style="width: 20%; padding: 5px; text-align: left; border: 1px solid #dee2e6;">
+                                            <span t-field="line.product_id.name"/>
+                                        </td>
+
+                                        <!-- Unit Cost -->
+                                        <td style="width: 20%; padding: 5px; text-align: right; border: 1px solid #dee2e6;">
+                                            <span t-field="doc.currency_id.symbol"/> 
+                                            <span t-esc="'{:,.2f}'.format((line.unit_cost or 0.0))"/>
+                                            <t t-set="total_unit_cost" t-value="total_unit_cost + round(((line.unit_cost or 0.0) * (line.prev_qty or 0.0)), 2)"/>
+                                        </td>
+
+                                       <!-- Taxed Amount -->
+                                        <td style="width: 20%; padding: 5px; text-align: right; border: 1px solid #dee2e6;">
+                                            <t t-if="line.tax_id == 'vat_12'">
+                                                <span t-field="doc.currency_id.symbol"/>
+                                                <t t-set="line_tax" t-value="line.prev_amount_report"/>
+                                                <span t-esc="'{:,.2f}'.format(line_tax)"/>
+                                                <t t-set="total_tax_amount" t-value="total_tax_amount + line_tax"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-field="doc.currency_id.symbol"/> 0.00
+                                            </t>
+                                        </td>
+                                        <!-- Total Cost -->
+                                        <!--
+                                        <td style="width: 20%; padding: 5px; text-align: right; border: 1px solid #dee2e6;">
+                                            <t t-if="line.prev_qty > 0">
+                                                <t t-if="line.tax_id and line.tax_id == 'vat_12'">
+                                                    <t t-set="line_total_cost" t-value="(line.total_amount_report or 0.0) * (line.prev_qty or 0.0) / (line.product_uom_qty or 1.0)"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-set="line_total_cost" t-value="(line.prev_qty or 0.0) * (line.unit_cost or 0.0)"/>
+                                                </t>
+                                                <t t-set="total_cost" t-value="total_cost + line_total_cost"/>
+                                                <span t-field="doc.currency_id.symbol"/>
+                                                <span t-esc="'{:,.2f}'.format(line_total_cost)"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-field="doc.currency_id.symbol"/> 0.00
+                                            </t>
+                                        </td>
+                                        -->
+                                        <!-- Total Tax Amount -->
+                                        <td style="width: 20%; padding: 5px; text-align: right; border: 1px solid #dee2e6;">
+                                            <t t-if="line.tax_id and line.tax_id == 'vat_12'">
+                                                <t t-set="line_total_cost" t-value="(line.total_amount_report or 0.0) * (line.prev_qty or 0.0) / (line.product_uom_qty or 1.0)"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-set="line_total_cost" t-value="(line.prev_qty or 0.0) * (line.unit_cost or 0.0)"/>
+                                            </t>
+                                            <t t-set="total_cost" t-value="total_cost + line_total_cost"/>
+                                            <span t-field="doc.currency_id.symbol"/>
+                                            <span t-esc="'{:,.2f}'.format(line_total_cost)"/>
+                                        </td>
+
+                                    </tr>
+                                </t>
+
+                                <!-- Totals Row -->
+                                <tr>
+                                    <td style="padding: 5px; border: 1px solid #dee2e6;">
+                                        <strong>Total:</strong>
+                                    </td>
+                                    <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">
+                                        <span t-esc="total_received_quantity"/>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Sub total, Vat Amount and Total Amount Section -->
+                                <tr>
+                                    <td colspan="4" style="border:1px solid #dee2e6;"></td>
+                                    <td colspan="2" style="border:1px solid #dee2e6; text-align:right;"><strong>Subtotal</strong></td>
+                                    <td style="text-align: right; padding: 5px; border: 1px solid #dee2e6;">
+                                        <span t-field="doc.currency_id.symbol"/>
+                                        <span t-esc="'{:,.2f}'.format(total_unit_cost)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="border:1px solid #dee2e6;"></td>
+                                    <td colspan="2" style="border:1px solid #dee2e6; text-align:right;"><strong>VAT Amount</strong></td>
+                                    <td style="text-align: right; padding: 5px; border: 1px solid #dee2e6;">
+                                        <span t-field="doc.currency_id.symbol"/>
+                                        <span t-esc="'{:,.2f}'.format(total_tax_amount)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="border:1px solid #dee2e6;"></td>
+                                    <td colspan="2" style="border:1px solid #dee2e6; text-align:right;"><strong>Total Amount</strong></td>
+                                    <td style="text-align: right; padding: 5px; border: 1px solid #dee2e6;">
+                                        <span t-field="doc.currency_id.symbol"/>
+                                        <span t-esc="'{:,.2f}'.format((total_unit_cost or 0.0) + (total_tax_amount or 0.0))"/>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                            </table>
+                        </div>
+                        <!-- Footer Section -->
+                        <div style="margin-top: 100px; text-align: right; margin-right: 100px;">
+                            <p><strong>Received By:</strong> <t t-esc="request.env.user.name"/></p>
+                            <!-- <p><strong>Custodian/Division/Branch in Charge:</strong> </p> -->
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Define the Report Action -->
+    <record id="report_receiving_receipt_custom_temp" model="ir.actions.report">
+        <field name="name">Receiving Receipt</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ml_development.custom_report_receiving_receipt_temp</field>
+        <field name="print_report_name">'Receiving Receipt %s' % (object.name)</field>
+        <field name="paperformat_id" ref="ml_default_paperformat"/>
+    </record>
+</odoo>
+	

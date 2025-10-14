@@ -1,0 +1,22 @@
+<odoo>
+    <data>
+    
+        <!-- Sequence for ml.request.quotation -->
+        <record id="ml_request_quotation_sequence_vismin" model="ir.sequence">
+            <field name="name">Request for Quotation (VISMIN)</field>
+            <field name="code">ml.request.quotation.vismin</field>
+            <field name="prefix">VM/RFQ</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="ml_request_quotation_sequence_lncr" model="ir.sequence">
+            <field name="name">Request for Quotation (LNCR)</field>
+            <field name="code">ml.request.quotation.lncr</field>
+            <field name="prefix">LN/RFQ</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,238 @@
+/* Base Colors */
+$o-brand-primary: #ff4d4d; /* Primary color: Red */
+
+/* Border Colors */
+$o-border-white: #ffffff;
+
+/* Typography */
+$o-h-color: #E20808; 
+$o-p-color: #1f0909; /* Muted Gray for subtle text */
+
+/* Font Style */
+$o-font_arial: Arial, sans-serif;
+
+/* Backgrounds */
+$o-background: rgba(0, 0, 0, 0.5); 
+$o-background-muted: rgba(255, 255, 255, 0.8);
+
+
+// Declaration of variable styles
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: $o-font_arial;
+}
+
+/* <!-- covers the two columns --> */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    padding: 50px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto; 
+    padding: 20px; 
+}
+
+.column1, .column2 {
+    flex: 1;
+    padding: 20px;
+}
+
+.column1 {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    margin-top: 50px;
+}
+
+.column1 .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: $o-background !important; /* Adjust overlay for readability */
+    z-index: 1;
+}
+
+.column1 .content-wrapper {
+    position: relative;
+    z-index: 2;
+    background: $o-background-muted; 
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.column1 h2 {
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: $o-h-color;
+}
+
+.column1 p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: $o-p-color;
+    text-align: justify;
+}
+
+.column2 {
+    background-color: $o-background-muted;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* <!-- Form Label --> */
+.column2 .form-label {
+    font-size: 14px;
+    color: $o-p-color;
+    margin-bottom: 5px;
+}
+
+.column2 .form-control {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid $o-border-white;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+.column2 .form-control:focus {
+    border-color: $o-h-color;
+    outline: none;
+}
+
+/* <!-- For the Login Button --> */
+.btn-primary {
+    background-color: $o-h-color;
+    color: $o-border-white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+.btn-primary-db {
+    background-color: $o-h-color;
+    color: $o-border-white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    height:50px;
+}
+
+/* <!-- For the hover of the Login Button --> */
+.btn-primary:hover {
+    background-color: $o-border-white;
+    color:  $o-h-color;
+    font-weight: 10%;
+    outline: 2px solid $o-h-color;
+
+}
+.btn-primary-db:hover {
+    background-color: $o-border-white;
+    color:  $o-h-color;
+    font-weight: 10%;
+    outline: 2px solid $o-h-color;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.input-group input {
+    flex-grow: 1;
+}
+
+.how-to-login-class {
+    border: 2px solid $o-h-color; 
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    background-color: $o-border-white; 
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.how-to-login-class h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: $o-h-color; 
+}
+
+.how-to-login-class ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.how-to-login-class ul li p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: $o-p-color;
+}
+
+.o_brand_promotion {
+    content: "";
+    left: 0;
+    top: 0;
+    visibility: hidden; /* Hides the unwanted text */
+}
+
+@media (max-width: 768px) {
+    /* /* Stack columns vertically / */
+    .row {
+        flex-direction: column;
+        align-items: center; 
+        gap: 20px; 
+    }
+
+    .column1, .column2 {
+        flex: none; 
+        width: 100%; 
+        margin-bottom: 20px; 
+    }
+
+    .column1 {
+        margin-top: 0; 
+    }
+
+    .content-wrapper {
+        padding: 15px; 
+    }
+
+    .column2 .form-control {
+        font-size: 14px; 
+        padding: 10px;
+    }
+
+    .btn-primary, .btn-primary-db {
+        font-size: 12px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .how-to-login-class {
+        padding: 15px;
+    }
+}

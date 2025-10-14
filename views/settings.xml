@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add Access rights for: Apps Menu -->
+    <menuitem
+        id="base.menu_management"
+        name="Apps"
+        groups="base.group_erp_manager,base.group_system"
+        sequence="500"/>
+    
+    <!-- Add Access rights for: Website Menu -->
+    <menuitem
+        id="website.menu_website_configuration"
+        name="Website"
+        groups="base.group_erp_manager,base.group_system"
+        sequence="95"/>    
+
+    <!-- Add Access rights for: Website Menu -->
+    <menuitem
+        id="contacts.menu_contacts"
+        name="Contacts"
+        groups="base.group_erp_manager,base.group_system"
+        sequence="30"/> 
+
+</odoo>

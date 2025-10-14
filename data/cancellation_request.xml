@@ -1,0 +1,33 @@
+<odoo>
+
+    <data>
+        <record id="email_template_purchase_cancel" model="mail.template">
+            <field name="name">Purchase Order Cancellation Request</field>
+            <field name="model_id" ref="model_purchase_order"/>
+            <field name="subject">Request for Cancellation - {{ object.name }}</field>
+            <field name="email_from">${(user.email or 'wsi.jborlagdan@gmail.com')}</field>
+            <field name="email_to">${object.user_id.email}</field>
+
+            <field name="body_html"><![CDATA[
+                <p>Hello ${object.user_id.name},</p>
+                <p>A request to cancel the following Purchase Order has been made:</p>
+                <p><strong>Reference:</strong> ${object.name}</p>
+                <p><strong>Vendor:</strong> ${object.partner_id.name}</p>
+                <p>Please review and take action.</p>
+                <p>Best regards,<br/>
+                Your Company</p>
+            ]]></field>
+
+            <field name="body_html"><![CDATA[
+                <p>Hello ${object.user_id.name},</p>
+                <p>A request to cancel the following Purchase Order has been made:</p>
+                <p><strong>Reference:</strong> ${object.name}</p>
+                <p><strong>Vendor:</strong> ${object.partner_id.name}</p>
+                <p>Please review and take action.</p>
+                <p>Best regards,<br/>
+                Your Company</p>
+            ]]></field>
+        </record>
+    </data>
+
+</odoo>

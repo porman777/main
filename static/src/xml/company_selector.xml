@@ -1,0 +1,12 @@
+<odoo>
+    <template id="company_selector_inherit" inherit_id="web.UserMenu">
+        <xpath expr="//div[@class='dropdown-menu']" position="inside">
+            <t t-foreach="user_companies.allowed_companies" t-as="company">
+                <div class="dropdown-item">
+                    <input type="checkbox" checked="checked" t-att-value="company.id"/>
+                    <span t-esc="company.name"/>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

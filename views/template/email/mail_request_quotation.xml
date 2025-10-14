@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Email Template for Request for Quotation -->
+        <record id="email_template_request_for_quotation" model="mail.template">
+            <field name="name">Purchase: Request For Quotation</field>
+            <field name="model_id" ref="ml_development.model_ml_request_quotation"/>
+            <field name="subject">{{ object.company_id.name }} Order (Ref {{ object.name or 'n/a' }})</field>
+            <field name="email_to">{{ }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="description">Send manually to vendor to request a quotation</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Dear Vendor <span t-field="object.partner_id.name" style="font-weight: bold;"/>,<br/><br/>
+
+                        Attached is a request for quotation with reference <span t-field="object.name" t-if="object.name" style="font-weight: bold;"/>, 
+                        from <span t-field="object.company_id.name" style="font-weight: bold;"/>.<br/><br/>
+
+                        Submission of Quotation will be on <span t-field="object.date_planned" t-options="{'format': 'MM/dd/yyyy'}" style="font-weight: bold;"/>, 
+                        and it would be greatly appreciated if you could send your quotation as soon as possible. 
+                        Should you require any further information to prepare your quotation, feel free to reach out. 
+                        You may send your quotation to 
+                        
+                        <!-- Zone emails (LNCR and VISMIN) -->
+                        <t>
+                            <t t-if="object.zone in ['ncr', 'luzon']">
+                                <a t-att-href="'mailto:ml-mmd-lncr@mlhuillier.com'">
+                                    ml-mmd-lncr@mlhuillier.com
+                                </a>.
+                                <br/><br/>
+                            </t>
+                            <t t-else="">
+                                <a t-att-href="'mailto:ml-mmd-vismin@mlhuillier.com'">
+                                    ml-mmd-vismin@mlhuillier.com
+                                </a>.
+                                <br/><br/>
+                            </t>
+                        </t>
+
+                        Thank you for your attention to this request. We look forward to your prompt response.<br/><br/>
+                        
+                        Best Regards,<br/>
+                        <strong>Purchaser, <span t-field="user.name"/></strong>
+                    </p>
+                </div>
+            </field>
+            <field name="report_template_ids" eval="[(4, ref('ml_development.ml_action_report_request_custom'))]"/>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+    </data>
+</odoo>

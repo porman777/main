@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- GROUP ZONE -->
+        <record id="ml_zone_category" model="ir.module.category">
+            <field name="name">ML Zone Group</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="group_lncr_mods" model="res.groups">
+            <field name="name">LNCR</field>
+            <field name="category_id" ref="ml_development.ml_zone_category"/>
+        </record>
+        
+        <record id="group_vismin_mods" model="res.groups">
+            <field name="name">VISMIN</field>
+            <field name="category_id" ref="ml_development.ml_zone_category"/>
+        </record>
+
+        <!-- PURCHASE MODULE -->
+        <record id="group_purchase_purchaser" model="res.groups">
+            <field name="name">Purchaser</field>
+            <field name="category_id" ref="base.module_category_inventory_purchase"/>
+        </record>
+
+        <record id="group_purchase_mmd_manager" model="res.groups">
+            <field name="name">MMD Manager</field>
+            <field name="category_id" ref="base.module_category_inventory_purchase"/>
+        </record>
+
+        <record id="group_purchase_vpo" model="res.groups">
+            <field name="name">VPO</field>
+            <field name="category_id" ref="base.module_category_inventory_purchase"/>
+        </record>
+
+        <record id="group_purchase_mmd_supervisor" model="res.groups">
+            <field name="name">MMD Supervisor</field>
+            <field name="category_id" ref="base.module_category_inventory_purchase"/>
+        </record>
+
+        <record id="group_purchase_iad" model="res.groups">
+            <field name="name">IAD</field>
+            <field name="category_id" ref="base.module_category_inventory_purchase"/>
+        </record>
+
+        <record id="group_purchase_president" model="res.groups">
+            <field name="name">President</field>
+            <field name="category_id" ref="base.module_category_inventory_purchase"/>
+        </record>
+
+        <record id="group_purchase_cfo" model="res.groups">
+            <field name="name">CFO</field>
+            <field name="category_id" ref="base.module_category_inventory_purchase"/>
+        </record>
+
+        <!-- INVENTORY  -->
+        <record id="group_recieving_manager_inventory" model="res.groups">
+            <field name="name">Receiving Manager</field>
+            <field name="category_id" ref="base.module_category_inventory_inventory"/>
+        </record>
+
+        <record id="group_stock_custodian" model="res.groups">
+            <field name="name">Stock Custodian</field>
+            <field name="category_id" ref="base.module_category_inventory_inventory"/>
+        </record>
+
+        <record id="group_rfp_manager_inventory" model="res.groups">
+            <field name="name">RFP Manager</field>
+            <field name="category_id" ref="base.module_category_inventory_inventory"/>
+        </record>
+
+        <record id="group_receiving_material_issuance" model="res.groups">
+            <field name="name">Material Issuance</field>
+            <field name="category_id" ref="base.module_category_inventory_inventory"/>
+        </record>
+
+    </data>
+</odoo>

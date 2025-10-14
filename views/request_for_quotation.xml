@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="request_for_quotation_view_search" model="ir.ui.view">
+        <field name="name">request_for_quotation.view.search</field>
+        <field name="model">ml.request.quotation</field>
+        <field name="arch" type="xml">
+            <search string="">
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="Created By" name="created_by" domain="[]" context="{'group_by': 'create_uid'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ML Request for Quotation Action / Menu -->
+    <record id="ml_request_quotation_action" model="ir.actions.act_window">
+        <field name="name">Request for Quotation</field>
+        <field name="res_model">ml.request.quotation</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'search_default_status': True, 'search_default_created_by': True}</field>
+    </record>
+
+    <menuitem
+        id="ml_request_for_quotation"
+        name="RFQ"
+        groups="base.group_system,group_purchase_purchaser,group_purchase_mmd_manager"
+        action="ml_request_quotation_action"
+        web_icon="ml_development,static/description/request_for_quotation.png"
+        sequence="1"
+    />
+
+    <!-- ML Request for Quotation Form and List View -->
+    <record id="ml_request_quotation_view_form" model="ir.ui.view">
+        <field name="name">ml_request_quotation.view.form</field>
+        <field name="model">ml.request.quotation</field>
+        <field name="arch" type="xml">
+            <form string="Request for Quotation" class="o_purchase_order">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,submitted_to_manager,purchase" options="{'clickable': False}" readonly="True"/>
+                    <button name="action_rfq_send" invisible="state != 'draft'" string="Send by email" type="object" groups="ml_development.group_purchase_purchaser" class="oe_highlight"/>
+                    <button name="action_rfq_send" invisible="state not in ('sent')" readonly="1" string="Re-send email" type="object"/>
+                    <button name="submitted_to_manager" string="Submit To Manager" type="object" invisible="state != 'sent'" groups="ml_development.group_purchase_purchaser"  class="oe_highlight" />
+                    <button name="button_confirm" type="object" invisible="state != 'submitted_to_manager'" string="Confirm Order" class="oe_highlight" groups="ml_development.group_purchase_mmd_manager" />
+                    <!-- <button name="button_cancel" invisible="state != 'submitted_to_manager'" string="Cancel" groups="ml_development.group_purchase_mmd_manager" data-hotkey="o"/> -->
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <!-- Smart Buttons Here -->
+                    </div>
+                    <div class="oe_title">
+                        <span class="o_form_label">Request for Quotation</span>
+                        <h1 class="d-flex">
+                            <field name="priority" widget="priority" class="me-3"/>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'supplier'}"
+                                placeholder="Name, TIN, Email, or Reference"
+                                readonly="state in ['cancel', 'done', 'purchase']" invisible="1"/>
+                            <field name="vendor_ids" options="{'no_quick_create': True}" required="isZone == 'lncr'" widget="many2many_tags" readonly="state != 'draft'" domain="[('supplier_rank','>', 0),('x_studio_zone','=','lncr')]" invisible="isZone != 'lncr'"/>
+                            <field name="vendor_ids" options="{'no_quick_create': True}" required="isZone == 'vismin'" widget="many2many_tags" readonly="state != 'draft'" domain="[('supplier_rank','>', 0),('x_studio_zone','=','vismin')]" invisible="isZone != 'vismin'"/>
+                            <field name="vendor_ids" options="{'no_quick_create': True}" required="isZone == 'all'" widget="many2many_tags" readonly="state != 'draft'" domain="[('supplier_rank','>', 0)]" invisible="isZone != 'all'"/>
+                            <field name="branch" required="isZone == 'lncr'" options="{'no_create': True, 'no_quick_create': True}" domain="[('zone','in',['ncr','luzon'])]" invisible="isZone != 'lncr'" readonly="state != 'draft'"/>
+                            <field name="branch" required="isZone == 'vismin'" options="{'no_create': True, 'no_quick_create': True}" domain="[('zone','in',['visayas','mindanao'])]" invisible="isZone != 'vismin'" readonly="state != 'draft'"/>
+                            <field name="branch" required="isZone == 'all'" options="{'no_create': True, 'no_quick_create': True}" invisible="isZone != 'all'" readonly="state != 'draft'"/>
+                            <field name="company_id" invisible="True" />
+                            <field name="company_id_dupl" string="Corporate" readonly="state != 'draft'"/>
+                            <field name="tin" string="Corporate TIN" readonly="state != 'draft'"/>
+                            <field name="isZone" invisible="True" />
+                            <field name="zone"/>
+                            <field name="currency_id" readonly="state != 'draft'"/>
+                            <field name="for_ho" invisible="True" />
+                            <field name="isMail_template" invisible="True" />
+                        </group>
+                        <group>
+                            <field name="deliver_to" required="True" invisible="False" domain="[('company_id', '=', company_id)]" group="base.group_system" />
+                            <field name="terms" readonly="state != 'draft'"/>
+                            <label for="date_planned"/>
+                            <div name="date_planned_div" class="o_row">
+                                <field name="date_planned" readonly="state != 'draft'"/>
+                                <span class="text-muted" invisible="state == 'draft'">(confirmed by purchaser)</span>
+                            </div>
+                            <label for="date_approve" invisible="state != 'purchase'"/>
+                            <div name="date_approve" class="o_row">
+                                <field name="date_approve" invisible="state != 'purchase'"/>
+                                <span class="text-muted" invisible="state != 'purchase'">(confirmed by MMD Manager)</span>
+                            </div>
+                            <field name="remarks" readonly="state != 'draft'" />
+                            <field name="currency_rate" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Products" name="products">
+                            <field name="order_line" widget="section_and_note_one2many" readonly="state in ('purchase', 'cancel')">
+                                <list string="Request for Quotation Lines" editable="bottom">
+                                    <control>
+                                        <create name="add_product_control" string="Add a product"/>
+                                    </control>
+                                    <field name="product_id" optional="hide" />
+                                    <field name="product_tmpl_id" required="1" />
+                                    <field name="name" required="1" />
+                                    <field name="product_qty" required="1" />
+                                    <field name="product_uom" required="1" />
+                                    <field name="product_uom_category_id" optional="hide" />
+                                    <field name="partner_id" domain="[('supplier_rank','>', 0)]" options="{'no_create': True, 'no_quick_create': True}" groups="ml_development.group_purchase_mmd_manager" />
+                                    <field name="price_unit" optional="hide" />
+                                    <field name="price_unit_duplicate" readonly="True" />
+                                    <field name="amount" optional="hide" />
+                                </list>
+                            </field>                      
+                            <div class="clearfix"/>
+                        </page>
+                        <page name="attachments" string="Attachments" invisible="state not in ['sent','submitted_to_manager','purchase']">
+                            <field name="attachment_id" nolabel="1" colspan="2" readonly="state not in ['draft','sent']">
+                                <list editable="bottom">
+                                    <field name="attachment_filename" optional="hide" />
+                                    <field name="attachment_ids" required="True" widget="many2many_binary" />
+                                    <field name="partner_id" required="1" domain="[('supplier_rank','>', 0)]" />
+                                    <field name="attached_date" readonly="True" />
+                                </list>
+                            </field>
+                            <span invisible="state not in ['sent','submitted_to_manager','purchase']" class="text-muted">Note: The preferred attachment format is PDF. However, other formats are also allowed if necessary.</span>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="ml_request_for_quotation_view_tree" model="ir.ui.view">
+        <field name="name">ml_request_for_quotation.view.tree</field>
+        <field name="model">ml.request.quotation</field>
+        <field name="arch" type="xml">
+            <list string="Request for Quotation" decoration-info="state in ['draft', 'sent']" decoration-muted="state == 'cancel'" default_order="name desc" class="o_purchase_order">
+                <header>
+                    <!-- Header Buttons Here -->
+                </header>
+                <field name="priority" optional="show" widget="priority" nolabel="1"/>
+                <field name="name" string="Reference" readonly="1" decoration-bf="1"/>
+                <field name="date_approve" column_invisible="context.get('quotation_only', False)" optional="show"/>
+                <field name="company_id" readonly="1" options="{'no_create': True}" groups="base.group_multi_company" optional="show"/>
+                <field name="date_planned" column_invisible="context.get('quotation_only', False)" optional="show"/>
+                <field name="state" optional="show" widget="badge" decoration-success="state == 'purchase' or state == 'done'" decoration-warning="state == 'to approve'" decoration-info="state == 'draft' or state == 'sent'"/>
+            </list>
+        </field>
+    </record>
+
+</odoo>

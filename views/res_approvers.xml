@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action Menu -->
+    <record id="res_approvers_name_action" model="ir.actions.act_window">
+        <field name="name">Approvals</field>
+        <field name="res_model">res.approvers</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <!-- Menuitem: Approvals -->
+    <menuitem
+        id="root_approvers_menu"
+        name="My Approval"
+        web_icon="ml_development,static/description/approval.png"
+        groups="purchase.group_purchase_manager,group_purchase_mmd_manager,group_purchase_vpo,group_purchase_mmd_supervisor,group_stock_custodian,group_purchase_president,group_purchase_cfo"
+        sequence="0"/>
+    
+    <menuitem
+        id="approvers_sub_menu"
+        name="Approvals"
+        groups="purchase.group_purchase_manager,group_purchase_mmd_manager,group_purchase_president,group_purchase_cfo,group_purchase_mmd_supervisor"
+        action="res_approvers_name_action"
+        parent="root_approvers_menu"
+        sequence="1"/>
+
+    <!-- VPO Menu and Action view -->
+    <record id="res_approvers_name_action_vpo" model="ir.actions.act_window">
+        <field name="name">Approvals</field>
+        <field name="res_model">res.approvers</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[('submitted_to', '=', 'vpo')]</field>
+        <field name="context">{}</field>
+    </record>
+    
+    <menuitem
+        id="approvers_sub_menu_vpo"
+        name="Approvals"
+        groups="group_purchase_vpo"
+        action="res_approvers_name_action_vpo"
+        parent="root_approvers_menu"
+        sequence="2"/>
+
+    <record id="res_approval_view_tree" model="ir.ui.view">
+        <field name="name">res_approval.view.tree</field>
+        <field name="model">res.approvers</field>
+        <field name="arch" type="xml">
+            <list delete="True" create="False" edit="False" >
+                <header>
+                    <button string="Batch Approve" name="batch_approve" type="object" class="oe_highlight"/>
+                </header>
+                <field name="isZone" string="Zone" />
+                <field name="name" />
+                <field name="branch" />
+                <field name="module" />
+                <field name="remarks" />
+                <!-- View Description Button -->
+                <!-- <button name="%(action_remarks_wizard)d" type="action" icon="fa-ellipsis-v" title="View Description" invisible="not remarks" /> -->
+                <field name="total_amount" />
+
+                <!-- Invisible Fields -->
+                <field name="submitted_to" widget='badge' optional='hide'/>
+                <field name="zone" optional='hide' />
+                <field name="purchase_order_id" optional='hide' />
+                <field name="quotation_request_id" optional='hide' />
+                <field name="stock_picking_id"  optional='hide' />
+                <field name="remarks" />
+                <field name="total_amount" />
+               
+                <!-- Buttons -->
+                <button name="action_approve" type="object" string="Approve" class="btn-approve" invisible="module in ['rfq']" confirm="Warning: Clicking this button is irreversible. Please confirm your action." />
+                <button name="action_reject" type="object" string="Disapprove" class="btn-disapprove" invisible="module in ['rfq','rr','it']" confirm="Are you sure you want to disapprove? This action cannot be undone." />
+                <button name="view_details_action" type="object" string="More Details" invisible="module == 'rfq'" class="btn-detail"/>
+                <button name="view_rfq_form" type="object" string="More Details" invisible="module != 'rfq'" class="btn-detail"/>
+            </list>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,146 @@
+<odoo>
+    <data>
+        <!-- Custom Request for Payments -->
+        <template id="report_request_payment_document" t-name="ml_development.report_request_payment_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="line">
+                    <t t-call="web.external_layout">
+                        <!-- Adjusted Header -->
+                        <div class="row">
+                            <!-- Centered text -->
+                            <div style="text-align: center; width: 100%;">
+                                <img src="ml_development/static/src/icons/ML.jpg" style="width:40%;" />
+                                <p style="margin-top: 10px;">
+                                    <strong style="font-size: 20px;">FINANCE DEPARTMENT</strong><br/>
+                                    B. Benedicto St., North Reclamation Area, Cebu City<br/>
+                                    Telephone No. 380-3000 Local No. 11667
+                                </p>
+                                <div style="position: absolute; top: 10px; right: 10px; text-align: right;">
+                                    <h5 style="margin: 0; font-size: 14px;">
+                                        REQUEST FOR PAYMENT <br/> 
+                                        REF NO: <span t-field="line.name"/>
+                                    </h5>
+                                </div>
+                                <!-- Divider Line -->
+                                <t t-if="line.select_zones == 'luzon'">
+                                    <div style="width: 100%; border-bottom: 10px solid #4e91fd; margin-top: 3rem"></div>
+                                </t>
+                                <t t-elif="line.select_zones == 'vismin'">
+                                    <div style="width: 100%; border-bottom: 10px solid #de66ac; margin-top: 3rem"></div>
+                                </t>
+                            </div>
+                        </div>
+                        <!-- Body -->
+                        <div class="row" style="margin-top: 1.5rem;">
+                            <div class="column1" style="width: 50%;">
+                                <p>
+                                    Please facilitate the presentation of <strong>CHECK</strong> in the amount of: 
+                                    <strong> 
+                                        <span style="text-decoration: underline;"> 
+                                            <t t-esc="line.number_to_words"/>
+                                        </span> 
+                                        <!-- (<span t-esc="line.env['ir.qweb.field.monetary'].value_to_html(line.total_amount, {'display_currency': line.currency_id})"/>) -->
+                                        <t t-if="line.currency_id">
+                                            (<span t-esc="line.currency_id.symbol"/>
+                                            <span t-esc="'{:,.2f}'.format(line.total_amount)"/>)
+                                        </t>
+                                    </strong>
+                                </p>
+                                <p>
+                                    For the purposes stated below/
+                                </p>
+                                <p><span t-field="line.purpose"/></p>
+                            </div>
+                            <div class="column2" style="width: 50%; text-align: left; padding-left: 5rem">
+                                <p><strong>Region:</strong></p>
+                                <ul style="list-style-type: none; padding: 0;">
+                                    <li>
+                                        <t t-if="line.select_zones == 'luzon'">
+                                            <span style="display: inline-block; margin-left: 10px;">☑ NCR/Luzon</span>
+                                        </t>
+                                        <t t-elif="line.select_zones != 'luzon'">
+                                            <span style="display: inline-block; margin-left: 10px;">□ NCR/Luzon</span>
+                                        </t>
+                                    </li>
+                                    <li>
+                                        <t t-if="line.select_zones == 'vismin'">
+                                            <span style="display: inline-block; margin-left: 10px; margin-top: 2px;">☑ VisMin</span>
+                                        </t>
+                                        <t t-elif="line.select_zones != 'vismin'">
+                                            <span style="display: inline-block; margin-left: 10px; margin-top: 2px;">□ VisMin</span>
+                                        </t>
+                                    </li>
+                                </ul>
+                                <p><strong>Payee:</strong> <span t-field="line.payee"/></p>
+                                <t t-foreach="line.to_field.bank_ids" t-if="line.to_field.bank_ids.allow_out_payment == True" t-as="bank">
+                                    <p><strong>Bank:</strong> <span t-field="bank.bank_id.name"/></p>
+                                    <p><strong>Bank Account:</strong> <span t-field="bank.acc_number"/></p>
+                                </t>
+                            </div>
+                        </div>
+                        <table class="mt-4" style="border: none; border-collapse: collapse; width: 100%; margin-top: 1.5rem;">
+                            <thead>
+                                <tr>
+                                    <th style="border: none; padding: 4px; font-size: 12px; text-align: center;">Prepared By:</th>
+                                    <th style="border: none; padding: 4px; font-size: 12px; text-align: center;">Noted By:</th>
+                                    <th style="border: none; padding: 4px; font-size: 12px; text-align: center;">Approved By:</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border: none;">
+                                    <td style="border: none; padding: 20px; text-align: center;">
+                                        <br/>
+                                        <t t-if="request.env.user.name">
+                                            <div style="width: 100%; border-bottom: 1px solid black;"></div>
+                                            <p style="font-size: 12px; margin-top: 2px;"><t t-esc="request.env.user.name"/> - RFP</p>
+                                        </t>
+                                    </td>
+                                    <td style="border: none; padding: 20px; text-align: center;">
+                                        <br/>
+                                        <div style="width: 100%; border-bottom: 1px solid black;"></div>
+                                        <p style="font-size: 12px; margin-top: 2px;">Edna Labra - Div/Dept. Head</p>
+                                    </td>
+                                    <td style="border: none; padding: 20px; text-align: center;">
+                                        <br/>
+                                        <div style="width: 100%; border-bottom: 1px solid black;"></div>
+                                        <t t-if="line.select_zones == 'lncr'">
+                                            <p style="font-size: 12px;  margin-top: 2px;">Lorenzo Escano - VP/LNCR</p>
+                                        </t>
+                                        <t t-if="line.select_zones == 'vismin'">
+                                            <p style="font-size: 12px;  margin-top: 2px;">Arne Jude Millares - VP/VisMin</p>
+                                        </t>
+                                        
+                                    </td>
+                                </tr>
+                                <tr style="border: none; text-align: center;">
+                                    <td style="border: none;"></td>
+                                    <td style="border: none;"></td>
+                                    <td style="border: none; padding: 20px;">
+                                        <br/>
+                                        <div style="width: 100%; border-bottom: 1px solid black;"></div>
+                                        <p style="font-size: 12px; margin-top: 2px;">
+                                            Michel J. Lhuillier - Chairman of the Board <br/>
+                                            Michael L. Lhuillier - President / CEO
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <record id="action_report_request_payment" model="ir.actions.report">
+            <field name="name">Request Payment Report</field>
+            <field name="model">request.payments</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ml_development.report_request_payment_document</field>
+            <field name="report_file">ml_development.report_request_payment_document</field>
+            <field name="print_report_name">'Request_Payment - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_request_payments"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="ml_rfp_default_paperformat"/>
+        </record>
+	</data>
+</odoo>

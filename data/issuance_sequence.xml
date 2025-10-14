@@ -1,0 +1,23 @@
+<odoo>
+    <data noupdate="1">
+        <record id="seq_issuance_form_ln_reset" model="ir.sequence">
+            <field name="name">Issuance Form LN Sequence (Reset)</field>
+            <field name="code">issuance.form.ln.reset</field>
+            <field name="prefix">LN/ISS</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">42</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_issuance_form_vm_reset" model="ir.sequence">
+            <field name="name">Issuance Form VM Sequence (Reset)</field>
+            <field name="code">issuance.form.vm.reset</field>
+            <field name="prefix">VM/ISS</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">35</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

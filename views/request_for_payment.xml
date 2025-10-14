@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Request for Payment Line Tree View -->
+    <record id="request_for_payments_line_view_tree" model="ir.ui.view">
+        <field name="name">request.payments.line.view.tree</field>
+        <field name="model">request.payments.line</field>
+        <field name="arch" type="xml">
+            <list string="Request for Payments" create='False' delete='False'>
+                <field name="name"/>
+                <field name="tax_type"/>
+                <field name="po_amount"/>
+                <field name="terms_by_text"/>
+                <field name="rr_amount"/>
+                <field name="paid_amount"/>
+                <field name="payable_amount" sum="Total Payable Amount"/>
+                <field name="state" widget="badge" 
+                    decoration-info="state == 'draft'"
+                    decoration-success="state == 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Request for Payment Tree View -->
+    <record id="request_for_payments_view_tree" model="ir.ui.view">
+        <field name="name">request.payments.view.tree</field>
+        <field name="model">request.payments</field>
+        <field name="arch" type="xml">
+            <list default_order="name desc" string="Request for Payments">
+                <field name="name"/>
+                <field name="to_field"/>
+                <field name="date_requested"/>
+                <field name="date_needed" widget="remaining_days" />
+                <field name="total_amount"/>
+                <field name="purpose"/>
+                <field name="state" widget="badge" 
+                    decoration-info="state == 'draft'"
+                    decoration-success="state == 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="request_payments_form_view" model="ir.ui.view">
+        <field name="name">Request for Payments</field>
+        <field name="model">request.payments</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Request Payments">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,manager,pres,iad,finance,done" options="{'clickable': False}" readonly="True"/>
+
+                    <!-- RFP Manager -->
+                    <button name="action_submitted_to_manager" groups="ml_development.group_rfp_manager_inventory" invisible="state not in ['draft']" string="Submit to Manager" type="object" class="oe_highlight" />
+
+                    <!-- Supervisor -->
+                    <button name="action_submitted_to_manager" groups="ml_development.group_purchase_mmd_supervisor" invisible="state not in ['change']" string="Submit to Manager" type="object" class="oe_highlight" />
+                    <button name="action_reject_payment" invisible="state not in ['change']" groups="ml_development.group_purchase_mmd_supervisor" string="Disapprove" type="object" />
+                    
+                    <!-- MMD Manager -->
+                    <button name="action_submit_to_iad" groups="ml_development.group_purchase_mmd_manager" invisible="state not in ['manager']" string="Submit to IAD" type="object" class="oe_highlight" />
+                    <button name="action_reject_payment" invisible="state not in ['manager','iad']" groups="ml_development.group_purchase_mmd_manager" string="Disapprove" type="object" />
+                    <button name="action_request_change" invisible="state not in ['manager','iad']" groups="ml_development.group_purchase_mmd_manager" string="Request for Change" type="object" />
+
+                    <!-- IAD -->
+                    <button name="action_submit_to_pres" groups="ml_development.group_purchase_iad" invisible="state != 'iad'" string="Submit to President" type="object" class="oe_highlight" />
+                    <button name="action_reject_payment" invisible="state not in ['iad','pres']" groups="ml_development.group_purchase_iad" string="Disapprove" type="object" />
+                    <button name="action_request_change" invisible="state not in ['iad','pres']" groups="ml_development.group_purchase_iad" string="Request for Change" type="object" />
+
+                    <!-- President -->
+                    <button name="action_submit_to_finance" groups="ml_development.group_purchase_president,ml_development.group_purchase_cfo" invisible="state != 'pres'" string="Submit to Finance" type="object" class="oe_highlight" />
+                    <button name="action_reject_payment" invisible="state not in ['pres','finance']" groups="ml_development.group_purchase_president,ml_development.group_purchase_cfo" string="Disapprove" type="object" />
+                    <button name="action_request_change" invisible="state not in ['pres','finance']" groups="ml_development.group_purchase_president,ml_development.group_purchase_cfo" string="Request for Change" type="object" />
+                    
+                    <!-- Finance -->
+                    <button name="action_approve" invisible="True" readonly="True" string="Confirm Payment" type="object" class="oe_highlight" />
+
+                    <!-- Done status -->
+                    <button name="%(ml_development.action_report_request_payment)d" string="Print" type="action" invisible="state != 'done'" />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <!-- Smart Buttons Here! -->
+                    </div>
+                    <div class="oe_title" style="padding-left: 15px; padding-right: 15px">
+                        <span class="o_form_label">Request for Payment</span>
+                        <h1 class="d-flex">
+                            <field name="name" readonly="True" />
+                        </h1>
+                    </div>
+                    <group style="padding-left: 15px; padding-right: 15px">
+                        <group>
+                            <field name="isAdmin" invisible="True" />
+                            <field name="company" invisible="True" />
+                            <field name="select_zones" invisible="isAdmin != True" /> 
+                            <field name="to_field" options="{'no_quick_create': True}" required="select_zones == 'luzon'" readonly="state not in ['draft', 'change']" domain="[('supplier_rank','>', 0),('x_studio_zone','=','lncr')]" invisible="select_zones != 'lncr'"/>
+                            <field name="to_field" options="{'no_quick_create': True}" required="select_zones == 'vismin'" readonly="state not in ['draft', 'change']" domain="[('supplier_rank','>', 0),('x_studio_zone','=','vismin')]" invisible="select_zones != 'vismin'"/>
+                            <field name="to_field" options="{'no_quick_create': True}" required="True" readonly="state not in ['draft', 'change']" domain="[('supplier_rank','>', 0)]" invisible="select_zones != False"/>
+                            <field name="currency_id" readonly="state not in ['draft', 'change']" />
+                            <field name="payee" readonly="state == 'done'" invisible="True" required="True"/>
+                            <field name="remarks" readonly="state in ['done']" widget="text"/>
+                        </group>
+                        <group>
+                            <field name="date_requested" readonly="state not in ['draft', 'change']" required="True"/>
+                            <field name="date_needed" readonly="state not in ['draft', 'change']" required="True"/>
+                        </group>
+                    </group>
+                    <hr/>
+                    <group style="padding-left: 15px; padding-right: 15px"> 
+                        <group>
+                            <field name="purpose" readonly="state not in ['draft', 'change']" required="True" widget="text"/>
+                        </group>
+                        <group>
+                            <field name="attachment" readonly="state not in ['draft', 'change']" widget="many2many_binary" />
+                            <field name="total_amount" invisible="True" />
+                            <field name="number_to_words" invisible="True" />
+                        </group>
+                    </group>
+                    <hr/>
+                    <div style="padding-left: 15px; padding-right: 15px; padding-top: 20px"> 
+                        <notebook>
+                            <page name="payment" string="Payments">
+                                <field name="request_payments_ids" nolabel="True" colspan="2" readonly="state not in ['draft', 'change']">
+                                    <list decoration-success="tax_type == 'vatable'" 
+                                        decoration-info="tax_type == 'exempt'" 
+                                        decoration-muted="tax_type == 'zero'"
+                                        decoration-danger="tax_type == 'non_vat'">
+                                        
+                                        <field name="purchase_order_ids" />
+                                        <field name="tax_type" required="True" />
+                                        <field name="amount_total" />
+                                        <field name="vat_amount" />
+                                        <field name="po_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                        <field name="rr_amount" />
+                                        <field name="atc_code" />
+                                        <field name="withholding_tax" string="W/Tax" />
+                                        <field name="paid_amount" />
+                                        <field name="payable_amount"  />
+                                        <field name="balance" readonly="True" />
+                                    </list>
+                                    <form>
+                                        <div class="alert alert-warning oe_edit_only" role="alert" name="warning_no_item" invisible="not no_received_item">
+                                            This transaction has <strong>no items received</strong>. It will be treated as an <strong>advance payment</strong>. 
+                                            Please check the <strong>Advanced Payment</strong> checkbox to confirm and proceed.
+                                        </div>
+                                        <div class="alert alert-warning oe_edit_only" role="alert" name="warning_excess_payment" invisible="not payment_exceeds_received">
+                                            The payment amount you entered <strong>exceeds the received amount</strong>. 
+                                            Since you have only received a <strong>partial value</strong> of the purchase, 
+                                            please check the <strong>Advanced Payment</strong> checkbox to confirm and proceed.
+                                        </div>
+                                        <sheet>
+                                            <group>
+                                                <group>
+                                                    <field name="purchase_order_ids" readonly="state not in ['draft', 'change']"  options="{'no_open': True, 'no_create': True, 'no_create_edit': True}" />
+                                                    <field name="tax_type" readonly="state not in ['draft', 'change']" />
+                                                    <field name="amount_total" readonly="state not in ['draft', 'change']" />
+                                                    <field name="vat_amount" readonly="state not in ['draft', 'change']" />
+                                                    <field name="po_amount" readonly="True" widget="monetary" options="{'currency_field': 'company_currency'}" />
+                                                    <field name="rr_amount" readonly="True" widget="monetary" options="{'currency_field': 'company_currency'}" />
+                                                    <label for="atc_code"/>
+                                                    <div name="atc_code" class="o_row custom-inline-fields">
+                                                        <span name="rate" class="d-inline-flex">
+                                                            <field name="atc_code" domain="[('type_tax_use', '=', 'sale'),('active', '=', True)]" options="{'no_open': True}" />
+                                                            <field name="rate" width="30" />
+                                                            <span> %</span>
+                                                        </span>
+                                                    </div>
+                                                    <field name="withholding_tax" readonly="True" />
+                                                </group>
+                                                <group>
+                                                    <label for="terms"/>
+                                                    <div name="terms" class="o_row">
+                                                        <field name="terms" readonly="True" />
+                                                        <field name="payment_percentage" />
+                                                    </div>
+                                                    <field name="paid_amount" readonly="True" />
+                                                    <field name="balance" readonly="True" />
+                                                    <field name="payable_amount" string="Amount to be paid" readonly="isCustomPay != True and isAdvancePay != True" />
+                                                    <field name="isCustomPay" readonly="state not in ['draft', 'change']" />
+                                                    <field name="isAdvancePay" readonly="state not in ['draft', 'change']" />
+                                                    <field name="no_received_item" invisible="True" />
+                                                    <field name="payment_exceeds_received" invisible="True" />
+                                                </group>
+                                            </group>
+                                            <notebook>
+                                                <page name="journal_items" string="Journal Items">
+                                                    <field name="journal_items" nolabel="True" readonly="state not in ['draft', 'change']" colspan="2">
+                                                        <list editable="bottom">
+                                                            <field name="purchase_order_ids" optional='hide' />
+                                                            <field name="account_id" />
+                                                            <field name="debit_account" />
+                                                            <field name="credit_account" />
+                                                        </list>
+                                                    </field>
+                                                </page>
+                                                <page name="payments" string="Payment History">
+                                                    <field name="payment_ids" nolabel="True" readonly="state not in ['draft', 'change']" colspan="2">
+                                                        <list delete="False" create="False">
+                                                            <field name="name" />
+                                                            <field name="purchase_order_ids" />
+                                                            <field name="tax_type" />
+                                                            <field name="po_amount" />
+                                                            <field name="rr_amount" />
+                                                            <field name="paid_amount" />
+                                                            <field name="payable_amount" />
+                                                            <field name="balance" />
+                                                        </list>
+                                                    </field>
+                                                </page>
+                                            </notebook>
+                                        </sheet>
+                                    </form>
+                                </field>         
+                            </page>
+                        </notebook>
+                    </div>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Request for Payments Action  -->
+    <record id="request_for_payments" model="ir.actions.act_window">
+        <field name="name">Request for Payments</field>
+        <field name="res_model">request.payments</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_state': True}</field>
+    </record>
+
+    <record id="request_payment_view_search" model="ir.ui.view">
+        <field name="name">request.payment.view.search</field>
+        <field name="model">request.payments</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Payment Number" filter_domain="[('name', 'ilike', self)]"/>
+                <field name="to_field" string="Vendor" filter_domain="[('to_field.name', 'ilike', self)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="state" string="Status" context="{'group_by': 'state'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Menu for Payment Requests -->
+    <menuitem id="menu_request_for_payment_root"
+        name="RFP"
+        groups="base.group_system,ml_development.group_purchase_mmd_manager,ml_development.group_rfp_manager_inventory,ml_development.group_purchase_iad,ml_development.group_purchase_vpo"
+        sequence="10"
+        web_icon="ml_development,static/description/request_for_payment.png"/>
+
+    <menuitem
+        id="menu_request_for_payment"
+        name="Request for Payment"
+        action="request_for_payments"
+        parent="menu_request_for_payment_root"
+        sequence="10"/>
+
+    <!-- ############ VIEW PAYMENTS ############### -->
+    <record id="rfp_view_payments_action" model="ir.actions.act_window">
+        <field name="name">View Payments</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">request.view.payments</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>Create your first payment</p>
+        </field>
+    </record>
+
+    <record id="view_payment_view_list" model="ir.ui.view">
+        <field name="name">view.payment.view.list</field>
+        <field name="model">request.view.payments</field>
+        <field name="arch" type="xml">
+            <list create="False">
+                <field name="rfp_line_id" />
+                <field name="purchase_order_ids" />
+                <field name="name" />
+                <field name="tax_type" />
+                <field name="po_amount" />
+                <field name="rr_amount" />
+                <field name="terms_by_text" />
+                <field name="balance" />
+                <field name="paid_amount" />
+                <field name="payable_amount" />
+                <field name="state" />
+            </list>
+        </field>
+    </record>
+
+    <record id="view_payment_view_form" model="ir.ui.view">
+        <field name="name">view_payment.view.form</field>
+        <field name="model">request.view.payments</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="purchase_order_ids" />
+                            <field name="name" />
+                            <field name="tax_type" />
+                            <field name="po_amount" />
+                            <field name="rr_amount" />
+                        </group>
+                        <group>
+                            <field name="terms_by_text" />
+                            <field name="balance" />
+                            <field name="paid_amount" />
+                            <field name="state" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <menuitem
+        id="rfp_config_menu"
+        name="Configuration"
+        groups="base.group_system,purchase.group_purchase_manager"
+        parent="menu_request_for_payment_root"
+        sequence="11"/>
+
+    <menuitem
+        id="rfp_payments_menu"
+        name="Payments"
+        action="rfp_view_payments_action"
+        parent="rfp_config_menu"
+        sequence="10"/>
+    
+    <!-- ############ Default Accounts ############### -->
+    <record id="default_account_view_list" model="ir.ui.view">
+        <field name="name">default.account.view.list</field>
+        <field name="model">payment.default.accounts</field>
+        <field name="arch" type="xml">
+            <list string="Default Accounts" editable='top'>
+                <field name="payment_type" />
+                <field name="debit_account_ids" widget="many2many_tags" />
+                <field name="credit_account_ids" widget="many2many_tags" />
+            </list>
+        </field>
+    </record>
+
+    <record id="default_account_action" model="ir.actions.act_window">
+        <field name="name">Default Accounts</field>
+        <field name="res_model">payment.default.accounts</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem
+        id="rfp_default_account_menu"
+        name="Default Accounts"
+        action="default_account_action"
+        parent="rfp_config_menu"
+        sequence="11"/>
+</odoo>

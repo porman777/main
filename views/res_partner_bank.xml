@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add active toggle -->
+    <record id="ml_inherit_form_partner_bank" model="ir.ui.view">
+        <field name="name">inherit_partner_form_bank.view.form.inherit</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="account.view_partner_bank_form_inherit_account"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='allow_out_payment']" position="before">
+                <field name="active" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ml_inherit_list_partner_bank" model="ir.ui.view">
+        <field name="name">inherit_partner_list_bank.view.form.inherit</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='allow_out_payment']" position="before">
+                <field name="active" widget="boolean_toggle" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

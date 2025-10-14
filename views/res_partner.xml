@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit List view -->
+        <record id="itc_inherit_partner_list" model="ir.ui.view">
+            <field name="name">inherit.partner.list.view.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//list" position="replace">
+                    <list string="Contacts" sample="1" multi_edit="1">
+                        <field name="display_name" string="Name" optional="hide"/>
+                        <field name="complete_name" string="Name"/>
+                        <field name="vat" optional="show" readonly="1" string="TIN" />
+                        <field name="function" column_invisible="True"/>
+                        <field name="phone" optional="show"/>
+                        <field name="mobile" optional="hide"/>
+                        <field name="email" optional="show"/>
+                        <field name="user_id" optional="hide" widget="many2one_avatar_user" domain="[('share', '=', False)]"/>
+                        <field name="city" optional="hide" invisible="1"/>
+                        <field name="state_id" optional="hide" readonly="1"/>
+                        <field name="country_id" optional="hide" invisible="1"/>
+                        <field name="category_id" optional="hide" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                        <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        <field name="is_company" column_invisible="True"/>
+                        <field name="parent_id" readonly="1" column_invisible="True"/>
+                        <field name="active" column_invisible="True"/>
+                    </list>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Add Other Details to Partners/Vendors -->
+        <record id="inherit_res_partner_add_bank_details" model="ir.ui.view">
+            <field name="name">res_partner_add_bank_details.view.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='street2']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='vat']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//page[@name='internal_notes']" position="before">
+                    <page name="other_details" string="Other Information">
+                        <group>
+                            <group>
+                                <field name="supplier_code" />
+                                <field name="atc_code" domain="[('active','=',True)]" string="ATC Code" />
+                                <field name="rate" string="Rate (%)" />
+                                <field name="expense_classification" />
+                            </group>
+                            <group>
+                                <field name="tax_type" />
+                                <field name="tax_classification" />
+                                <field name="account_form_goods" />
+                                <field name="account_form_service" />
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Modify VAT String -->
+        <record id="inherit_vat_string_partner" model="ir.ui.view">
+            <field name="name">vat_string_partner.view.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base_vat.view_partner_base_vat_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//label[@for='vat']" position="attributes">
+                    <attribute name="string">TIN</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Contacts Menu: Configuration -->
+        <record id="contacts.action_contacts" model="ir.actions.act_window">
+            <field name="name">Companies</field>
+            <field name="domain">[('is_company', '=', True), ("supplier_rank", "=", 0)]</field>
+        </record>
+
+        <record id="ml_employees_action" model="ir.actions.act_window">
+            <field name="name">Employees</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('employee_ids', '!=', False)]</field>
+            <field name="context">{"default_employee": True}</field> 
+        </record>
+
+        <record id="ml_res_partner_vendors_action" model="ir.actions.act_window">
+            <field name="name">Vendors</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[("supplier_rank", ">", 0)]</field>
+            <field name="context">{"default_is_company": True, "default_supplier_rank": 1}</field>    
+        </record>
+
+        <record id="ml_managers_action" model="ir.actions.act_window">
+            <field name="name">Area Managers</field>
+            <field name="res_model">area.region.managers</field>
+            <field name="view_mode">list</field>
+            <field name="domain">[("manager_rank", "=", True)]</field>
+            <field name="context">{'default_manager_rank': True}</field>
+            <field name="help" type="html">
+                <p>Create your First Record Here!</p>
+            </field>
+        </record>
+
+        <record id="action_branch_managers" model="ir.actions.act_window">
+            <field name="name">Branch Managers</field>
+            <field name="res_model">branch.managers</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Create your first Branch Manager</p>
+            </field>
+        </record>
+
+        <record id="action_ml_abm" model="ir.actions.act_window">
+            <field name="name">ML ABM</field>
+            <field name="res_model">ml.abm</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Create your first ML ABM</p>
+            </field>
+        </record>
+
+        <menuitem
+            id="contacts.menu_contacts"
+            name="Contacts"
+            groups="base.group_system,group_purchase_purchaser"
+            sequence="30"/>
+        
+        <menuitem
+            id="contacts.res_partner_menu_contacts"
+            parent="contacts.menu_contacts"
+            name="Companies"/>
+        
+        <menuitem
+            id="res_partner_employees_contacts"
+            parent="contacts.menu_contacts"
+            action="ml_employees_action"
+            name="Employees"
+            sequence="4" />
+
+        <menuitem
+            id="vendor_menu_res_partner_menu"
+            name="Vendors"
+            action="ml_res_partner_vendors_action"
+            groups="base.group_system,group_purchase_purchaser"
+            parent="contacts.menu_contacts"
+            sequence="5"/>
+
+        <menuitem
+            id="contacts.res_partner_menu_config"
+            name="Configuration"
+            parent="contacts.menu_contacts"
+            sequence="99"/>
+
+        <menuitem
+            id="ml_managers_menu"
+            name="Area/Region Managers"
+            action="ml_managers_action"
+            groups=""
+            parent="contacts.menu_contacts"
+            sequence="6"/>
+        
+        <menuitem
+            id="menu_branch_managers"
+            name="Branch Managers"
+            parent="contacts.menu_contacts"
+            action="action_branch_managers"
+            sequence="7"
+        />
+
+        <menuitem
+            id="menu_ml_abm"
+            name="ML ABM"
+            parent="contacts.menu_contacts"
+            action="action_ml_abm"
+            sequence="8"
+        />
+
+        <record id="ml_branch_tree" model="ir.ui.view">
+            <field name="name">ml_managers.view.tree</field>
+            <field name="model">branch.managers</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="zone" />
+                    <field name="complete_name"/>
+                    <field name="branch_name"/>
+                    <field name="region_code" />
+                    <field name="region_name" />
+                    <field name="email" />
+                    <field name="area_name" />
+                </list>
+            </field>
+        </record>
+
+        <record id="ml_managers_tree" model="ir.ui.view">
+            <field name="name">ml_managers.view.tree</field>
+            <field name="model">area.region.managers</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="zone" />
+                    <field name="complete_name" />
+                    <field name="email" />
+                    <field name="region_code" />
+                    <field name="region_name" />
+                    <field name="resource_id_number" />
+                    <field name="area_name" />
+                    <field name="contact_number" />
+                </list>
+            </field>
+        </record>
+        
+        <record id="ml_abm_tree" model="ir.ui.view">
+            <field name="name">ml_abm.view.tree</field>
+            <field name="model">ml.abm</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="zone" />
+                    <field name="complete_name" />
+                    <field name="branch_name" />
+                    <field name="email" />
+                    <field name="region_code" />
+                    <field name="region_name" />
+                    <field name="resource_id_number" />
+                    <field name="area_name" />
+                    <field name="contact_number" />
+                </list>
+            </field>
+        </record>
+    </data>
+</odoo>

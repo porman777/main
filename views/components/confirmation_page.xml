@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="confirmation_template" name="Issuance Confirmation Page">
+        <t t-call="website.layout">
+            <t t-set="page_title">Issuance Confirmation</t>
+            <div class="container mt-5 mb-5">
+                <div class="card shadow-lg p-4">
+                    <div class="card-body text-center">
+                        <h2 class="card-title text-success mb-4">Issuance Confirmed</h2>
+                        <p class="fs-5">
+                            <strong>Issuance ID:</strong> <span class="text-primary"><t t-esc="issuance.name"/></span>
+                        </p>
+                        <p class="fs-5">
+                            <strong>Status:</strong> <span class="badge bg-success text-uppercase"><t t-esc="issuance.state"/></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

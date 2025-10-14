@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <template id="report_purchase_order_custom" inherit_id="purchase.report_purchaseorder_document">
+        <!-- Modify the main content -->
+        <xpath expr="." position="replace">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <div class="header">
+                        <div class="row">
+                            <div style="text-align: center; width: 100%;">
+                                <img src="/ml_development/static/src/icons/ML.jpg" style="width:40%;"/>
+                                <p style="margin-top: 10px;">
+                                    <strong style="font-size: 20px;">MATERIALS MANAGEMENT DIVISION</strong><br/>
+                                    B. Benedicto St., North Reclamation Area, Cebu City<br/>
+                                    Telephone No. 380-3000 Local No. 11667
+                                </p>
+                            </div>
+                            <!-- Right-aligned "Purchase Order No." -->
+                            <div style="position: absolute; top: 50px; right: 20px; text-align: right;">
+                                <h5 style="margin: 0; font-size: 14px;" t-if="o.state in ['purchase', 'done']">
+                                    PURCHASE <br/>
+                                    ORDER No. <span t-field="o.name"/>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <table class="table table-sm o_main_table table-bordered" style="border: 1px solid #dee2e6; border-collapse: collapse; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4" style="border: 1px solid #dee2e6; padding: 8px;">
+                                            SUPPLIER: <span t-field="doc.partner_id"/>
+                                        </th>
+                                        <th colspan="2" style="border: 1px solid #dee2e6; padding: 8px;">
+                                            DATE:
+                                            <t t-set="current_date" t-value="time.strftime('%m/%d/%y')"/>
+                                            <t t-esc="current_date"/>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="4" style="border: 1px solid #dee2e6; padding: 8px;">
+                                            DELIVER TO: <span t-field="doc.deliver_to"/>
+                                        </th>
+                                        <th colspan="2" style="border: 1px solid #dee2e6; padding: 8px;">
+                                            TERMS: <span t-field="doc.terms"/>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="4" style="border: 1px solid #dee2e6; padding: 8px;">
+                                            BRANCH: <span t-field="doc.branch"/> 
+                                        </th>
+                                        <th colspan="2" style="border: 1px solid #dee2e6; padding: 8px;">
+                                            TIN: <span t-esc="doc.tin or doc.company_id.partner_id.vat"/>  
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="4" style="border: 1px solid #dee2e6; padding: 8px;">
+                                            CORPORATION: <span t-field="doc.corporation"/> 
+                                        </th>
+                                        <th colspan="2" style="border: 1px solid #dee2e6; padding: 8px;">
+                                            DESCRIPTION: <span t-field="doc.description"/>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px;" class="text-center">
+                                            <strong>ITEM CODE</strong>
+                                        </th>
+                                        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px;" class="text-center">
+                                            <strong>QTY</strong>
+                                        </th>
+                                        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px;" class="text-center">
+                                            <strong>UNIT</strong>
+                                        </th>
+                                        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px;" class="text-center">
+                                            <strong>DESCRIPTION</strong>
+                                        </th>
+                                        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px;" class="text-center">
+                                            <strong>UNIT PRICE</strong>
+                                        </th>
+                                        <th style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px;" class="text-center">
+                                            <strong>AMOUNT</strong>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <!-- Removed the tfoot and added conditional t-tag  -->                                
+                                <tbody>
+                                    <t t-foreach="doc.order_line" t-as="line">
+                                        <tr>
+                                            <!-- Column 1: Item Code -->
+                                            <td style="width: 10%; padding: 5px; text-align: center; word-break: break-word; white-space: normal;">
+                                                <span t-field="line.item_code"/>
+                                            </td>
+
+                                            <!-- Column 2: Quantity -->
+                                            <td style="width: 10%; padding: 5px; text-align: center; word-break: break-word; white-space: normal;">
+                                                <span t-field="line.product_qty"/>
+                                            </td>
+
+                                            <!-- Column 3: UOM -->
+                                            <td style="width: 10%; padding: 5px; text-align: center; word-break: break-word; white-space: normal;">
+                                                <span t-field="line.product_uom"/>
+                                            </td>
+
+                                            <!-- Column 4: Description -->
+                                            <td style="width: 30%; padding: 5px; text-align: left; word-break: break-word; white-space: normal;">
+                                                <span t-field="line.name"/>
+                                            </td>
+
+                                            <!-- Column 5: Price Unit -->
+                                            <td style="width: 20%; padding: 5px; text-align: right; word-break: break-word; white-space: normal;">
+                                                <span t-field="doc.currency_id.symbol"/> 
+                                                <span t-esc="'{:,.2f}'.format(line.price_unit).replace(',', ',\u200B')"/>
+                                            </td>
+
+                                            <!-- Column 6: Amount (FIXED) -->
+                                            <td style="width: 20%; padding: 5px; text-align: right; word-break: break-word; white-space: normal;">
+                                                <span t-field="doc.currency_id.symbol"/> 
+                                                <span t-esc="'{:,.2f}'.format(line.amount).replace(',', ',\u200B')"/> 
+                                            </td>
+                                        </tr>
+
+                                        <!-- ~Total row~ -->
+                                        <t t-if="line == doc.order_line[-1]">
+                                            <!-- Sub Total Section -->
+                                            <tr>
+                                                <td style="width: 10%; padding: 5px; text-align: center;"></td>
+                                                <td style="width: 10%; padding: 5px; text-align: center;">
+                                                    <strong><span t-field="doc.total_qty"/></strong>
+                                                </td>
+                                                <td style="width: 10%; padding: 5px; text-align: center;"></td>
+                                                <td style="width: 30%; padding: 5px; text-align: left;"></td>
+                                                <td style="width: 20%; padding: 5px; text-align: right;">
+                                                    <strong>Subtotal</strong>
+                                                </td>
+                                                <td style="width: 20%; padding: 5px; text-align: right;">
+                                                    <strong>
+                                                        <span t-field="doc.currency_id.symbol"/> 
+                                                        <span t-esc="'{:,.2f}'.format(doc.amount_untaxed).replace(',', ',\u200B')"/>
+                                                    </strong>
+                                                </td>
+                                            </tr>
+                                            <!-- VAT Section -->
+                                            <tr>
+                                                <td style="width: 10%; padding: 5px; text-align: center;"></td>
+                                                <td style="width: 10%; padding: 5px; text-align: center;"></td>
+                                                <td style="width: 10%; padding: 5px; text-align: center;"></td>
+                                                <td style="width: 30%; padding: 5px; text-align: left;"></td>
+                                                <td style="width: 20%; padding: 5px; text-align: right;">
+                                                    <strong>VAT Amount</strong>
+                                                </td>
+                                                <td style="width: 20%; padding: 5px; text-align: right;">
+                                                    <strong>
+                                                        <span t-field="doc.currency_id.symbol"/> 
+                                                        <span t-esc="'{:,.2f}'.format(doc.amount_tax).replace(',', ',\u200B')"/>
+                                                    </strong>
+                                                </td>
+                                            </tr>
+                                            <!-- Total Amount Section -->
+                                            <tr>
+                                                <td style="width: 10%; padding: 5px; text-align: center;"></td>
+                                                <td style="width: 10%; padding: 5px; text-align: center;"></td>
+                                                <td style="width: 10%; padding: 5px; text-align: center;"></td>
+                                                <td style="width: 30%; padding: 5px; text-align: left;"></td>
+                                                <td style="width: 20%; padding: 5px; text-align: right;">
+                                                    <strong>Total Amount</strong>
+                                                </td>
+                                                <td style="width: 20%; padding: 5px; text-align: right;">
+                                                    <strong>
+                                                        <span t-field="doc.currency_id.symbol"/> 
+                                                        <span t-esc="'{:,.2f}'.format(doc.amount_total).replace(',', ',\u200B')"/>
+                                                    </strong>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </tbody>
+                            </table> 
+                            <p class="text-muted" style="font-size: 15px"> 
+                                1. The prices and terms shown on this order are based on your quotation. We reserve the right to cancel, reject or return any or all of the items if details of delivery do not conform to specification on this order. <br/>
+                                2. Please furnish the following for each delivery: a) Original Invoice and P.O. b) Delivery Receipt <br/>
+                                3. If above items are not delivered on or before <span t-field="doc.expected_arrival"/>, this P.O is cancelled and must be returned to M.Lhuillier,Phils.
+                            </p>
+                            <table class="mt-4" style="border: none; border-collapse: collapse; width: 100%; margin-top: 1.5rem; page-break-inside: avoid;">
+                                <thead>
+                                    <tr>
+                                        <th style="border: none; padding: 4px; font-size: 12px; text-align: center;">Ordered By:</th>
+                                        <th style="border: none; padding: 4px; font-size: 12px; text-align: center;">Recommending Approval:</th>
+                                        <th style="border: none; padding: 4px; font-size: 12px; text-align: center;">Approved By:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border: none;">
+                                        <td style="border: none; padding: 20px; text-align: center;">
+                                            <br/>
+                                            <p style="font-size: 12px; margin-bottom: 2px;">Edna Labra</p>
+                                            <div style="width: 100%; border-bottom: 1px solid black;"></div>
+                                            <p style="font-size: 12px; margin-top: 2px;">MMD Manager</p>
+                                        </td>
+                                        <td style="border: none; padding: 20px; text-align: center;">
+                                            <br/>
+                                            <t t-if="doc.zone in ['ncr','luzon']">
+                                                <p style="font-size: 12px;  margin-bottom: 2px;">Lorenzo Escano</p>
+                                                <div style="width: 100%; border-bottom: 1px solid black;"></div>
+                                                <p style="font-size: 12px;  margin-top: 2px;">VPO/COO, LNCR</p>
+                                            </t>
+                                            <t t-if="doc.zone in ['visayas','mindanao']">
+                                                <p style="font-size: 12px;  margin-bottom: 2px;">Arne Jude Millares</p>
+                                                <div style="width: 100%; border-bottom: 1px solid black;"></div>
+                                                <p style="font-size: 12px;  margin-top: 2px;">VPO/COO, VISMIN</p>
+                                            </t>
+                                        </td>
+                                        <td style="border: none; padding: 20px; text-align: center;">
+                                            <br/>
+                                            <div style="padding-left: 10px; padding-right: 10px;">
+                                                <p style="font-size: 12px; margin-bottom: 2px;">Michael L. Lhuillier</p>
+                                                <div style="width: 100%; border-bottom: 1px solid black;"></div>
+                                                <p style="font-size: 12px; margin-top: 2px;">President / CEO</p>
+                                            </div>
+                                            <br/>
+                                            <div style="padding-left: 10px; padding-right: 10px;">
+                                                <p style="font-size: 12px; margin-bottom: 2px;">Michel J. Lhuillier</p>
+                                                <div style="width: 100%; border-bottom: 1px solid black;"></div>
+                                                <p style="font-size: 12px; margin-top: 2px;">Chairman of the Board</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <center class="text-muted" style="margin-top: 20px; font-size: 10px"> This is electronically approved form. No signature needed.  </center>
+                        </div>
+                    </t>
+                </t>
+            </t>	
+        </xpath>
+    </template>
+
+    <!-- Allow edits (e.g. studio) without changing the often inherited base template -->
+    <template id="document_tax_totals" inherit_id="account.document_tax_totals_template" primary="True"></template>
+</odoo>

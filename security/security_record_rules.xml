@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ALLOW MULTI-COMPANIES -->
+        <record id="rule_company_read" model="ir.rule">
+            <field name="name">Allow all users to read companies</field>
+            <field name="model_id" ref="base.model_res_company"/>
+            <field name="domain_force">[(1, '=', 1)]</field> 
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>  <!-- Applies to all users -->
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- FILTER BY COMPANY: RFQ -->
+        <record id="request_quotation_rule_company" model="ir.rule">
+            <field name="name">Limit user's access to read other companies data</field>
+            <field name="model_id" ref="ml_development.model_ml_request_quotation"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field> 
+            <field name="groups" eval="[]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- FILTER BY ZONE (LNCR): RFQ -->
+        <record id="request_quotation_rule_area_lncr" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (LNCR)</field>
+            <field name="model_id" ref="ml_development.model_ml_request_quotation"/>
+            <field name="domain_force">[('zone', 'in', ['ncr','luzon']),('company_id', 'in', company_ids)]</field> 
+            <field name="groups" eval="[(4, ref('ml_development.group_lncr_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- FILTER BY ZONE (VISMIN): RFQ -->
+        <record id="request_quotation_rule_area_vismin" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (VISMIN)</field>
+            <field name="model_id" ref="ml_development.model_ml_request_quotation"/>
+            <field name="domain_force">[('zone', 'in', ['visayas','mindanao']),('company_id', 'in', company_ids)]</field> 
+            <field name="groups" eval="[(4, ref('ml_development.group_vismin_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- FILTER BY ZONE (LNCR): PO -->
+        <record id="purchase_order_rule_area_lncr" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (LNCR)</field>
+            <field name="model_id" ref="ml_development.model_purchase_order"/>
+            <field name="domain_force">[('zone', 'in', ['ncr','luzon']),('company_id', 'in', company_ids)]</field> 
+            <field name="groups" eval="[(4, ref('ml_development.group_lncr_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- FILTER BY ZONE (VISMIN): PO -->
+        <record id="purchase_order_rule_area_vismin" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (VISMIN)</field>
+            <field name="model_id" ref="ml_development.model_purchase_order"/>
+            <field name="domain_force">[('zone', 'in', ['visayas','mindanao']),('company_id', 'in', company_ids)]</field> 
+            <field name="groups" eval="[(4, ref('ml_development.group_vismin_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- FILTER BY ZONE (LNCR): RFP -->
+        <record id="request_payments_rule_area_lncr" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (LNCR)</field>
+            <field name="model_id" ref="ml_development.model_request_payments"/>
+            <field name="domain_force">[('select_zones', 'in', ['lncr']),('company', 'in', company_ids)]</field> 
+            <field name="groups" eval="[(4, ref('ml_development.group_lncr_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        
+        <!-- FILTER BY ZONE (VISMIN): RFP -->
+        <record id="request_payments_rule_area_vismin" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (VISMIN)</field>
+            <field name="model_id" ref="ml_development.model_request_payments"/>
+            <field name="domain_force">[('select_zones', 'in', ['vismin']),('company', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('ml_development.group_vismin_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- FILTER BY ZONE (LNCR): ISSUANCE -->
+        <record id="issuance_rule_area_lncr" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (LNCR) Issuance to Branch</field>
+            <field name="model_id" ref="ml_development.model_issuance_form"/>
+            <field name="domain_force">[('zone', '!=', False), ('zone', 'in', ['ncr','luzon'])]</field> 
+            <field name="groups" eval="[(4, ref('ml_development.group_lncr_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- FILTER BY ZONE (VISMIN): ISSUANCE -->
+        <record id="issuance_rule_area_vismin" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (VISMIN) Issuance to Branch</field>
+            <field name="model_id" ref="ml_development.model_issuance_form"/>
+            <field name="domain_force">[('zone_vismin', '!=', False), ('zone_vismin', 'in', ['visayas','mindanao'])]</field>
+            <field name="groups" eval="[(4, ref('ml_development.group_vismin_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record> 
+
+        <!-- - FILTER BY ZONE (LNCR): MOVE LINES  -->
+        <!-- <record id="stock_move_lines_area_lncr" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (LNCR) FOR MOVE LINES</field>
+            <field name="model_id" ref="ml_development.model_stock_move_line"/>
+            <field name="domain_force">[('zone', '!=', False),('zone', 'in', ['lncr']),('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('ml_development.group_lncr_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record> -->
+
+        <!-- - FILTER BY ZONE (VISMIN): MOVE LINES  -->
+        <!-- <record id="stock_move_lines_area_vismin" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (VISMIN) FOR MOVE LINES </field>
+            <field name="model_id" ref="ml_development.model_stock_move_line"/>
+            <field name="domain_force">[('zone', '!=', False),('zone', 'in', ['vismin']),('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('ml_development.group_vismin_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>  -->
+
+        <!-- :::::::: APPROVALS MODULE RULES PER USERS :::::::: -->
+        <!-- FILTER BY ZONE (LNCR): APPROVALS -->
+        <record id="approval_rule_area_lncr" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (LNCR) approvals</field>
+            <field name="model_id" ref="ml_development.model_res_approvers"/>
+            <field name="domain_force">[('zone', 'in', ['luzon','ncr']),('isZone','!=','vismin')]</field> 
+            <field name="groups" eval="[(4, ref('ml_development.group_lncr_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- FILTER BY ZONE (VISMIN): APPROVALS -->
+        <record id="approval_rule_area_vismin" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (VISMIN) approvals</field>
+            <field name="model_id" ref="ml_development.model_res_approvers"/>
+            <field name="domain_force">[('zone', 'in', ['visayas','mindanao']),('isZone','!=','lncr')]</field>
+            <field name="groups" eval="[(4, ref('ml_development.group_vismin_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record> 
+        
+        <!-- ADMIN ROLE -->
+        <record id="approval_lines_admin" model="ir.rule">
+            <field name="name">Access all data in approvals module</field>
+            <field name="model_id" ref="ml_development.model_res_approvers"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('purchase.group_purchase_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record> 
+
+        <!-- MANAGER ROLE -->
+        <record id="approval_lines_manager" model="ir.rule">
+            <field name="name">Limit manager's access to read other data</field>
+            <field name="model_id" ref="ml_development.model_res_approvers"/>
+            <field name="domain_force">[('submitted_to', '=', 'manager')]</field>
+            <field name="groups" eval="[(4, ref('ml_development.group_purchase_mmd_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record> 
+
+        <!-- SUPERVISOR ROLE -->
+        <record id="approval_lines_supervisor" model="ir.rule">
+            <field name="name">Limit supervisor's access to read other data</field>
+            <field name="model_id" ref="ml_development.model_res_approvers"/>
+            <field name="domain_force">[('submitted_to', '=', 'supervisor')]</field>
+            <field name="groups" eval="[(4, ref('ml_development.group_purchase_mmd_supervisor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record> 
+
+        <!-- PRESIDENT -->
+        <record id="approval_lines_pres" model="ir.rule">
+            <field name="name">Limit president's access to read other data</field>
+            <field name="model_id" ref="ml_development.model_res_approvers"/>
+            <field name="domain_force">[('submitted_to', '=', 'pres_cfo')]</field>
+            <field name="groups" eval="[(4, ref('ml_development.group_purchase_president'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- CFO ROLE -->
+        <record id="approval_lines_cfo" model="ir.rule">
+            <field name="name">Limit cfo's access to read other data</field>
+            <field name="model_id" ref="ml_development.model_res_approvers"/>
+            <field name="domain_force">[('submitted_to', '=', 'pres_cfo')]</field>
+            <field name="groups" eval="[(4, ref('ml_development.group_purchase_cfo'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- CUSTODIAN ROLE -->
+        <record id="approval_lines_custodian" model="ir.rule">
+            <field name="name">Limit custodian's access to read other data</field>
+            <field name="model_id" ref="ml_development.model_res_approvers"/>
+            <field name="domain_force">[('submitted_to', '=', 'custodian')]</field>
+            <field name="groups" eval="[(4, ref('ml_development.group_stock_custodian'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- - FILTER BY ZONE (LNCR): Receiving Receipt  -->
+        <record id="inventory_rule_area_lncr" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (LNCR) </field>
+            <field name="model_id" ref="ml_development.model_stock_picking"/>
+            <field name="domain_force">[('isZone', 'in', ['lncr'])]</field>
+            <field name="groups" eval="[(4, ref('ml_development.group_lncr_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>  
+       
+        <!-- FILTER BY ZONE (VISMIN): Receiving Receipt -->
+        <record id="inventory_rule_area_vismin" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (VISMIN) </field>
+            <field name="model_id" ref="ml_development.model_stock_picking"/>
+            <field name="domain_force">[ ('isZone', 'in', ['vismin'])]</field>
+            <field name="groups" eval="[(4, ref('ml_development.group_vismin_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>  
+        
+        <!-- <record id="inventory_rule_area_vismin" model="ir.rule">
+            <field name="name">Limit user's access to read other data based on its zone (VISMIN)123</field>
+            <field name="model_id" ref="ml_development.model_stock_picking"/>
+            <field name="domain_force">[('zone', '!=', False), ('zone', 'in', ['visayas','mindanao'])]</field> 
+            <field name="groups" eval="[(4, ref('ml_development.group_vismin_mods'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record> -->
+
+
+    <record id="product_template_rule_zone_lncr" model="ir.rule">
+        <field name="name">Filter Product Template by Zone (LNCR)</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="domain_force">[('location_name', 'in', ['ln_ml_stock'])]</field> 
+        <field name="groups" eval="[(4, ref('ml_development.group_lncr_mods'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="product_template_rule_zone_vismin" model="ir.rule">
+        <field name="name">Filter Product Template by Zone (VISMIN)</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="domain_force">[('location_name', 'in', ['vm_ml_stock'])]</field>
+        <field name="groups" eval="[(4, ref('ml_development.group_vismin_mods'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+
+        <record id="stock_move_line_rule_vismin" model="ir.rule">
+            <field name="name">VISMIN: stock.move.line access</field>
+            <field name="model_id" ref="stock.model_stock_move_line"/>
+            <field name="groups" eval="[(4, ref('ml_development.group_vismin_mods'))]"/>
+            <field name="domain_force">[('product_id.location_name', 'in', ['vm_ml_stock'])]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="stock_move_line_rule_lncr" model="ir.rule">
+            <field name="name">LNCR: stock.move.line access</field>
+            <field name="model_id" ref="stock.model_stock_move_line"/>
+            <field name="groups" eval="[(4, ref('ml_development.group_lncr_mods'))]"/>
+            <field name="domain_force">[('product_id.location_name',  'in', ['ln_ml_stock']) ]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>  
+ 
+
+    </data>
+</odoo>

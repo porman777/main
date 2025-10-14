@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_issuance" model="ir.actions.report">
+        <field name="name">Issuance Report</field>
+        <field name="model">issuance.form</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ml_development.report_issuance_document</field>
+        <field name="report_file">ml_development.report_issuance_document</field>
+        <field name="print_report_name">'Issuance_Form - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_issuance_form"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="ml_default_paperformat"/>
+    </record>
+
+    <template id="report_issuance_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="header">
+                    <div class="row">
+                        <div style="text-align: center; width: 100%;">
+                            <img src="/ml_development/static/src/icons/ML.jpg" style="width:40%;"/>
+                            <p style="margin-top: 10px;">
+                                <strong style="font-size: 20px;">ISSUANCE FORM</strong><br/>
+                                B. Benedicto St., North Reclamation Area, Cebu City<br/>
+                                Telephone No. 380-3000 Local No. 11667
+                            </p>
+                            <br/>
+                        </div>
+                    </div>
+                </div>
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <div style="padding: 2.5rem;">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div>
+                                        <strong>Assigned To:</strong>  <span t-field="doc.assigned_to_selected"/>
+                                    </div>
+                                    <div>
+                                        <strong>Online Request Number:</strong> <span t-field="doc.online_request_number"/>
+                                    </div>
+                                    <div>
+                                        <strong>Date Issued:</strong><span t-field="doc.date_issued" t-options="{'format': 'MM/dd/yyyy'}"/>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <div>
+                                        <strong>Issuance Number: </strong> <span t-field="doc.name"/> 
+                                    </div>
+                                    <div>
+                                        <strong>Remarks:</strong> <span t-field="doc.remarks"/>
+                                    </div>
+                                    <div>
+                                            <t t-if="doc.region">
+                                                <strong>Region:</strong> <span t-field="doc.region"/>
+                                            </t>
+                                            <t t-elif="doc.region_vismin">
+                                                <strong>Region:</strong> <span t-field="doc.region_vismin"/>
+                                            </t>
+                                            <t t-elif="doc.region_all">
+                                                <strong>Region:</strong> <span t-field="doc.region_all"/>
+                                            </t>
+                                        </div>
+
+                                    </div>
+                            </div>
+                            
+                            <br/>
+                            <t t-set="total_quantity" t-value="0"/>
+
+                            <table class="table table-sm o_main_table table-bordered" 
+                                style="border: 1px solid #dee2e6; border-collapse: collapse; width: 100%;">
+                                <thead>
+                                    <!-- First Section (Supplier and Delivery Information) -->
+                                    <tr>
+                                        <tr>
+                                    
+                                            <th colspan="3"  style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px; text-align: center;">
+                                                <strong>WAREHOUSE</strong>
+                                            </th>
+                                            <th colspan="3"  style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px; text-align: center;">
+                                                <strong>ITEM CODE</strong>
+                                            </th>
+
+                                            <th colspan="3"  style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px; text-align: center;">
+                                                <strong>PRODUCT</strong>
+                                            </th>
+                                            <th colspan="3"  style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px; text-align: center;">
+                                                <strong>QUANTITY</strong>
+                                            </th>
+                                        </tr>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <t t-foreach="doc.issuance_line_ids" t-as="line">
+                                        <tr>
+                                            <td colspan="3" style="border: 1px solid #dee2e6;  padding: 8px; text-align: center;"><span t-field="line.location_id"/></td>
+                                            <td colspan="3" style="border: 1px solid #dee2e6;  padding: 8px; text-align: center;"><span t-field="line.item_code_related"/></td>
+                                            <td colspan="3" style="border: 1px solid #dee2e6;  padding: 8px; text-align: center;"><span t-field="line.product_id"/></td>
+                                            <td colspan="3" style="border: 1px solid #dee2e6;  padding: 8px; text-align: center;"><span t-field="line.product_uom"/></td>
+                                            
+                                            <td colspan="3" style="border: 1px solid #dee2e6;  padding: 8px; text-align: center;"><span t-field="line.product_uom_qty"/>
+                                                    <t t-set="total_quantity" t-value="total_quantity + int(line.product_uom_qty)"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+
+                                <!-- Tfoot -->
+                                <tfoot>
+                                    <tr style="border-top: 2px ">
+                                        <td colspan="3" style="padding: 5px; text-align: center; ">
+                                            <strong>Total:</strong> 
+                                        </td>
+                                        <td colspan="3" style="padding: 5px; text-align: center; ">
+                                            <strong></strong>
+                                        </td>
+                                        <!-- Total Unit Cost: Two decimal places with comma -->
+                                        <td colspan="3" style="padding: 5px; text-align: center; ">
+                                            <strong></strong>
+                                        </td>
+                                        <!-- Total Cost: Two decimal places with comma -->
+                                        <td colspan="3" style="padding: 5px; text-align: center; ">
+                                            <strong> <t t-esc="total_quantity"/> </strong>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                            <div class="row">
+                                <div class="col-6" >
+                                    <div>
+                                        <p> <strong> Prepared By: </strong>  <span t-field="doc.prepared_by"/> </p>
+                                    </div>
+                                    <div>
+                                        <p style="margin-right: 150px;"><strong>Released By: </strong> <span t-field="doc.released_by"/>   </p>
+                                    </div>
+                                </div>
+
+                                <div class="col-6" style="margin-left: 17%;" >
+                                    <div> 
+                                        <br/>
+                                    </div>
+                                    <div>
+                                        <strong> _____________________________________ </strong> <br/>
+                                        <strong>Received By </strong>  <span t-field="doc.received_by"/>
+                                        <br/>
+                                        <p > Signature over printed Name </p>
+                                        <!-- Signature over printed Name -->
+                                    </div>
+                                    <div>
+                                        <span style="font-size: 10px;">
+                                            (Please verify the received items before signing <br/> and report any discrepancies immediately.)  
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="text-align: center;">
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <p>
+                                    I acknowledge that I have received the items in the quantities specified, and in good condition.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

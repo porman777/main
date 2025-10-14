@@ -1,0 +1,61 @@
+<odoo>
+    <data>
+        <record id="view_company_form_inherit" model="ir.ui.view">
+            <field name="name">res.company.form.inherit</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <!-- Display the one2many field for branches -->
+                <xpath expr="//field[@name='child_ids']" position="replace">
+                    <group>
+                        <field name="branch_ids" nolabel="1" colspan="2">
+                            <list>
+                                <field name="branch_name"/>
+                                <field name="branch_id"/>
+                                <field name="area"/>
+                                <field name="area_id"/>
+                                <field name="region"/>
+                                <field name="region_id"/>
+                                <field name="zone"/>
+                                <field name="status"/>
+                                <field name="tin" />
+                                <field name="partner_id" />
+                                <field name="branch_email" />
+                                <field name="location_dest_id" />
+                                <field name= "head_office"/>
+                                <field name= "am_email"/>
+                                <field name= "rm_email"/>
+                            </list>
+                            
+                            <form>
+                                <group>
+                                    <field name="branch_name"/>
+                                    <field name="branch_id"/>
+                                </group>
+                                <group>
+                                    <field name="area"/>
+                                    <field name="area_id"/>
+                                </group>
+                                <group>
+                                    <field name="region"/>
+                                    <field name="region_id"/>
+                                </group>
+                                <group>
+                                    <field name="zone"/>
+                                    <field name="status"/>
+                                    <field name="tin" />
+                                    <field name="partner_id" />
+                                    <field name="branch_email" />
+                                    <field name="location_dest_id"/>
+                                    <field name= "head_office"/>
+                                    <field name= "am_email"/>
+                                    <field name= "rm_email"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,44 @@
+/* Base Colors */
+$o-brand-primary: #ff4d4d; /* Primary color: Red */
+$o-brand-secondary: #ff9999; /* Secondary color: Light red */
+$o-brand-success: #ff6666; /* Success: Muted red */
+$o-brand-info: #ff8080; /* Info: Slightly softer red */
+$o-brand-warning: #ffad99; /* Warning: Coral red */
+$o-brand-danger: #cc0000; /* Danger: Dark red */
+
+/* Typography */
+$o-text-color: #333333; /* Dark Gray for readability */
+$o-text-color-muted: #555555; /* Muted Gray for subtle text */
+
+/* Backgrounds */
+$o-background: #fff5f5; /* Light red background */
+$o-background-muted: #ffe6e6; /* Softer light red for muted areas */
+
+/* Custom styles for better readability */
+body {
+    background-color: $o-background;
+    color: $o-text-color;
+}
+
+.btn-primary {
+    background-color: $o-brand-primary !important;
+    border-color: $o-brand-primary !important;
+    color: #fff !important;
+}
+
+.btn-primary:hover {
+    background-color: darken($o-brand-primary, 10%) !important;
+}
+
+.card {
+    background-color: $o-background-muted !important;
+    color: $o-text-color !important;
+    border-color: $o-brand-primary !important;
+}
+
+.o_form_view {
+    background-color: $o-background !important;
+}
+
+
+

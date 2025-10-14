@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit vendor's pricelist form -->
+    <record id="inherit_vendor_pricelist" model="ir.ui.view">
+        <field name="name">inherit_vendor_pricelist.view.form.inherit</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Add Attachment field -->
+            <xpath expr="//field[@name='discount']" position="before">
+                <field name="attachment_ids" widget="many2many_binary" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

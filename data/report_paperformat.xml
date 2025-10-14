@@ -1,0 +1,25 @@
+<odoo>
+    <record id="ml_default_paperformat" model="report.paperformat">
+        <field name="name">ML Paper Format</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">50</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line">False</field>
+    </record>
+
+    <record id="ml_rfp_default_paperformat" model="report.paperformat">
+        <field name="name">ML RFP Paper Format</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">15</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">15</field>
+        <field name="margin_right">15</field>
+        <field name="header_line">False</field>
+    </record>
+</odoo>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add user group in expense menu -->
+    <menuitem
+        id="hr_expense.menu_hr_expense_root"
+        name="Expenses"
+        groups="base.group_system"
+        sequence="230"/>
+
+</odoo>

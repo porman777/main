@@ -1,0 +1,67 @@
+<odoo>
+    <record id="email_template_issuance" model="mail.template">
+        <field name="name">Issuance Form Email</field>
+        <field name="model_id" ref="model_issuance_form"/>
+        <field name="subject">Issuance Form: {{ object.name }}</field>
+        <field name="email_from">{{object.prepared_by.email}}</field>
+        <field name="body_html">
+            <![CDATA[
+                <t t-if="object.assigned_to">
+                    <p>Dear <t t-out="object.assigned_to.branch_name"/>,</p>
+                </t>
+                <t t-elif="object.assigned_to_vismin">
+                    <p>Dear <t t-out="object.assigned_to_vismin.branch_name"/>,</p>
+                </t>
+                <t t-elif="object.assigned_to_all">
+                    <p>Dear <t t-out="object.assigned_to_all.branch_name"/>,</p>
+                </t>
+                <t t-else="">
+                    <p>Dear User,</p>
+                </t>
+                <p>Please find below the details of the issuance request:</p>
+                <t t-set="total_qty" t-value="sum(line.product_uom_qty for line in object.issuance_line_ids)"/>
+
+                    <table style="border-collapse: collapse; width: 100%;" border="1">
+                        <thead>
+                            <tr style="background-color: #f2f2f2; text-align: left;">
+                                <th style="padding: 8px; border: 1px solid #ddd;">Item</th>
+                                <th style="padding: 8px; border: 1px solid #ddd;">Quantity</th>
+                                <th style="padding: 8px; border: 1px solid #ddd;">Unit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="object.issuance_line_ids" t-as="line">
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="line.product_id.name"/></td>
+                                <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="int(line.product_uom_qty)"/></td>
+                                <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="line.product_uom.name"/></td>
+                            </tr>
+                            </t>
+                            <!-- Total row -->
+                            <tr style="background-color: #eaeaea;">
+                                <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Total</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-out="int(total_qty)"/></td>
+                                <td style="padding: 8px; border: 1px solid #ddd;"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                <p>Once you have received the items, please click the 
+                    <strong>
+                        <a t-att-href="object.get_confirmation_url()"
+                            style="padding-right: 2px; padding-left: 2px;">
+                            Confirm Order
+                        </a>
+                    </strong> to acknowledge receipt.
+                </p>
+                <p>Thank you.</p>
+                <p>Best regards,</p>
+                <p><strong><t t-out="user.name"/></strong></p>
+                <p>
+                    
+                </p>
+            ]]>
+        </field>
+        <field name="auto_delete" eval="False"/>
+    </record>
+</odoo>

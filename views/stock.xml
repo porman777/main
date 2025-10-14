@@ -1,0 +1,764 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="your_module_product_product_form_inherit" model="ir.ui.view">
+            <field name="name">product.product.form.inherit.hide_standard_price</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='standard_price_uom']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//label[@for='standard_price']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='default_code']" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Hide unnecessary fields and buttons in product form -->
+        <record id="view_product_template_form_inherit" model="ir.ui.view">
+            <field name="name">product.template.form.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <!-- Hide Cost field -->
+                <xpath expr="//label[@for='standard_price']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//div[@name='standard_price_uom']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <!-- Add fields -->
+                <xpath expr="//field[@name='invoice_policy']" position="after">
+                    <field name="trade_name" invisible="True"/> 
+
+                    <field name="trade_name_supplier" options="{'no_quick_create': True}" domain="[('supplier_rank','>', 0),('x_studio_zone','=','lncr')]" invisible="is_Zone != 'vismin'"/>
+                    <field name="trade_name_supplier" options="{'no_quick_create': True}" domain="[('supplier_rank','>', 0),('x_studio_zone','=','vismin')]" invisible="is_Zone != 'lncr'"/>    
+                    <field name="is_Zone" invisible="True"/>   
+
+                    <field name="item_code"/>
+                    <field name="item_description"/>
+                    <field name="suggested_item_type" />
+                </xpath>
+                <xpath expr="//field[@name='categ_id']" position="after">
+                    <field name="purchase_price"/>
+                    <field name="debit_gl_code" readonly="True" />
+                    <field name="debit_gl_description" readonly="True" />
+                    <field name="credit_gl_code" readonly="True" />
+                    <field name="credit_gl_description" readonly="True" />
+                    
+                    <field name="initial_quantity" invisible="True" />
+                    <field name="location_name" required="True"  readonly="False" />
+                </xpath>
+                <!-- Hide Existing Fields and Buttons -->
+                <xpath expr="//button[@name='action_open_documents']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//page[@name='sales']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='taxes_id']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//label[@for='list_price']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//div[@name='list_price_uom']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//label[@for='standard_price']" position="before">
+                    <field name="uom_id" class="oe_inline" options="{'no_create': True}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- 
+        <record id="view_product_template_form_inherit" model="ir.ui.view">
+            <field name="name">product.product.template.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='virtual_available']" position="attributes">
+                    <attribute name="invisible">1</attribute> 
+                </xpath>
+            </field>
+        </record> 
+        -->
+
+        <record id="stock_report_inherit" model="ir.ui.view">
+            <field name="name">stock.report.inherit.tree.view</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="stock.product_product_stock_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='free_qty']" position="attributes">
+                    <attribute name="optional"> hide </attribute>
+                </xpath>
+                <xpath expr="//field[@name='incoming_qty']"  position="attributes">
+                    <attribute name="optional"> hide </attribute>
+                </xpath>
+                <xpath expr="//field[@name='outgoing_qty']" position="attributes">
+                    <attribute name="optional"> hide </attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="inherit_stock_template_1" model="ir.ui.view">
+            <field name="name">inherit_stock_template_1.form.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="stock.product_template_form_view_procurement_button"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_product_tmpl_forecast_report']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_view_orderpoints'][1]" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_view_orderpoints'][2]" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_view_related_putaway_rules']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_view_storage_category_capacity']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- <odoo>
+            <record id="inherit_product_template_tree_view" model="ir.ui.view">
+                <field name="name">product.template.product.list.inherit</field>
+                <field name="model">product.template</field>
+                <field name="inherit_id" ref="product.product_template_product_list"/>
+                <field name="arch" type="xml">
+                    <xpath expr="//button[@name='virtual_available']" position="attributes">
+                        <attribute name="invisible">True</attribute>
+                    </xpath>
+                </field>
+            </record>
+        </odoo> -->
+
+        <record id="inherit_stock_template_2" model="ir.ui.view">
+            <field name="name">inherit_stock_template_2.form.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="sale.product_template_form_view_sale_order_button"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_view_sales']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="inherit_stock_template_3" model="ir.ui.view">
+            <field name="name">inherit_stock_template_3.form.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="account.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='supplier_taxes_id']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="inherit_stock_template_4" model="ir.ui.view">
+            <field name="name">inherit_stock_template_4.form.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='default_code']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='barcode']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//page[@name='variants']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Modification of Receipt Form  -->
+        <record id="stock_picking_form_inherit" model="ir.ui.view">
+            <field name="name">stock.picking.form.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+
+                <!-- Add fields after partner_id -->
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="address" />
+                    <field name="attachment" widget="many2many_binary"/>
+                    <field name="isZone" invisible="1"/>
+                    <field name="picking_type_code_value" invisible="1"/>
+                    <button name="inventory_receiving_accounting"/>
+                </xpath>
+
+                <!-- Hide extra + note pages -->
+                <xpath expr="//page[@name='extra']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='note']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                
+                <xpath expr="//field[@name='partner_id']" position="replace">
+                    <!-- LNCR supplier field -->
+                    <field name="partner_id"
+                        nolabel="1"
+                        string="Supplier"
+                        required="1"
+                        readonly="state in ['cancel','done','partially_received']"
+                        domain="[('supplier_rank','>', 0), ('x_studio_zone','=','lncr')]"
+                        invisible="isZone != 'lncr'"/>
+
+                    <!-- VISMIN supplier field -->
+                    <field name="partner_id"
+                        nolabel="1"
+                        string="Supplier"
+                        required="1"
+                        readonly="state in ['cancel','done','partially_received']"
+                        domain="[('supplier_rank','>', 0), ('x_studio_zone','=','vismin')]"
+                        invisible="isZone != 'vismin'"/>
+
+                    <!-- Fallback supplier field (no zone restriction) -->
+                    <field name="partner_id"
+                        nolabel="1"
+                        string="Supplier"
+                        required="1"
+                        readonly="state in ['cancel','done','partially_received']"
+                        domain="[('supplier_rank','>', 0)]"
+                        invisible="isZone != 'all'"/>
+                </xpath>
+
+
+                <!-- Update labels for partner_id -->
+                <xpath expr="//group//label[@for='partner_id']" position="attributes">
+                    <attribute name="string">Supplier</attribute>
+                </xpath>
+                <xpath expr="//div//label[@for='partner_id']" position="attributes">
+                    <attribute name="string">Supplier</attribute>
+                </xpath>
+                <xpath expr="//label[@for='partner_id']" position="attributes">
+                    <attribute name="string">Supplier</attribute>
+                </xpath>
+
+                <!-- Scheduled Date readonly -->
+                <xpath expr="//field[@name='scheduled_date']" position="attributes">
+                    <attribute name="readonly">context.get('state') not in ('draft', 'assigned')</attribute>
+                </xpath>
+
+                <!-- Product UOM Qty readonly -->
+                <xpath expr="//field[@name='product_uom_qty']" position="attributes">
+                    <attribute name="readonly">state not in ['draft', 'assigned'] or has_origin == True</attribute>
+                </xpath>
+
+                <!-- Force integer widget on quantity -->
+                <xpath expr="//field[@name='quantity']" position="attributes">
+                    <attribute name="widget">integer</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+
+        <!-- Hide the website field in file attachment field -->
+        <record id="receipt_form_line" model="ir.ui.view">
+            <field name="name">receipt.form.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <!-- <xpath expr="//field[@name='location_dest_id']" position="replace">
+                    <field name="location_dest_id" options="{'no_create': True}" string="To" groups="stock.group_stock_multi_locations"  readonly="state in ['done', 'partially_received','cancel']"/>
+                </xpath> -->
+                <xpath expr="//div[@name='button_box']//button[@name='action_view_stock_valuation_layers']" position="replace"> 
+                    <button type="object" name="action_view_stock_valuation_layers" class="oe_stat_button" icon="fa-money" groups="base.group_no_one" invisible="state != 'done'">
+                        <div class="o_stat_info">
+                            <span class="o_stat_text">Valuation</span>
+                        </div>
+                    </button>
+                </xpath>
+                <xpath expr="//header/button[@name='action_assign']" position="replace"/>
+                <xpath expr="//header/button[@name='action_confirm']" position="replace"/>
+                <xpath expr="//header/button[@name='do_print_picking']" position="replace">
+                    <button name="%(report_receiving_receipt_custom)d"
+                        string="Print"
+                        type="action"
+                        invisible="state not in ['done']"
+                    />
+                    <!-- <button name="inventory_valuation"  type="object" string="Inventory Valuation" /> -->
+                    <!-- <button name="action_generate_pdf_and_post_message" type="object"
+                            string="Generate PDF and Post Message" class="btn-primary"/>
+                    -->
+                </xpath>
+                <xpath expr="//header/button[@name='action_cancel']" position="replace">
+                    <button name="action_cancel" invisible="state in ('draft', 'confirmed', 'done', 'cancel')" string="Cancel" groups="base.group_user" type="object" confirm="Are you sure you want to cancel this transfer?" data-hotkey="x"/>
+                </xpath>
+
+                <xpath expr="//header/button[@name='button_validate']" position="replace">
+                    <button name="button_validate" invisible="state in ('confirmed', 'done', 'cancel')" string="Validate" type="object" class="oe_highlight" groups="stock.group_stock_user" confirm="Are you sure you want to validate this receiving form?" data-hotkey="v"/>
+                </xpath>
+                <xpath expr="//header/button[contains(@class, 'o_btn_validate')]" position="replace">
+                  <button name="button_validate" invisible="state in ('draft',  'assigned','confirmed', 'done', 'partially_received', 'cancel')" string="Validate" type="object"  class="o_btn_validate" groups="stock.group_stock_user" confirm="Are you sure you want to validate this transfer?" data-hotkey="v"/>
+                </xpath>
+                <!-- <xpath expr="//header/button[@name='318']" position="replace"/> 
+                <xpath expr="//header/button[@name='336']" position="replace"/> -->
+                <xpath expr="//field[@name='move_ids_without_package']/list" position="inside">
+
+
+<!-- Updated by jo start -->
+<field name="unit_cost"
+       string="Unit Cost"
+       readonly="state in ['partially_received', 'done', 'cancel'] or has_origin == True"/>
+
+<field name="has_origin"
+       column_invisible="True"/>
+
+
+<!-- <field name="unit_cost_converted"
+       string="Unit Cost (USD)"
+       invisible="state in ['partially_received', 'done', 'cancel']"/> -->
+
+<field name="unit_cost_converted"
+       string="Unit Cost (USD)"
+       column_invisible="True"/>
+
+
+
+<!-- Updated by jo end -->
+
+                    
+                    <!-- <field name="amount" string="Amount" invisible="1" />  -->
+                    <field name="received_qty" readonly="state in ['done','cancel']" /> 
+                    <field name="currency_id"/>
+                    <field name="prev_qty" readonly="True"  /> 
+                     
+<!-- Updated by jo start -->    
+<!-- <field name="tax_id"
+    readonly="state not in ['draft','assigned'] or currency_id == isUSD"
+    required="True"/> -->
+
+
+<field name="tax_id"
+    readonly="state not in ['draft','assigned']"
+    required="True"/>
+<!-- Updated by jo end -->
+
+                    <field name="prev_qty" optional="hide" />
+                    <field name="taxed_amount" sum="Total Taxed Amount" readonly="state in ['assigned','partially_received', 'done','cancel']"  />
+                    
+                    <field name="untaxed_amount" sum="Total Untaxed Amount" readonly="state in ['assigned','partially_received', 'done','cancel']"  />
+                    <field name="total_amount" sum="Total Amount" string="Total Amount" readonly="True"   /> 
+                    <field name="total_amount_report" sum="Total Amount" string="Total Amount" readonly="True" column_invisible="True"  /> 
+                    <field name="prev_amount_report" sum="Total Amount" string="Previous Amount" readonly="True" column_invisible="True" /> 
+                    <field name="state" string="State"  optional="hide"   /> 
+                </xpath>
+
+                
+                <xpath expr="//field[@name='owner_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='origin']" position="attributes">
+                    <attribute name="invisible">not origin</attribute>
+                    <attribute name="readonly">True</attribute>
+                </xpath>
+                <!-- <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_uom_qty']" position="attributes">
+                    <attribute name="sum">Total</attribute>
+                    <attribute name="readonly">state in ['partially_received','done']</attribute>
+                </xpath> -->
+                <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='quantity']" position="attributes">
+                    <attribute name="sum">Total</attribute>
+                    <attribute name="sum_field">integer</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='received_qty']" position="attributes">
+                    <attribute name="sum">Total</attribute>
+                </xpath>
+                <!-- <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='total_amount']" position="attributes">
+                    <attribute name="sum">Total</attribute>
+                </xpath> -->
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="invoice_number"/>
+                    <field name="total_amount" readonly="1" />
+                    <field name="received_amount" string="Received Amount" readonly="1"  invisible="picking_type_code != 'incoming'"   /> 
+                    <field name="remarks" readonly="state in ['done']" />
+                    <field name="branch" readonly="origin != False" domain="[('zone', 'in', ['luzon', 'ncr'])] 
+                        if isZone == 'lncr' else 
+                        [('zone', 'in', ['visayas', 'mindanao'])]" options="{'no_create': True, 'no_quick_create': True}" />
+                    <field name="zone" />
+                    <field name="currency_id"/>
+                    <field name="isUSD" invisible="True" />
+                    <field name="isPHP" invisible="True" />
+                    <field name="exchange_rate"   invisible="True"/>
+                    <field name="conversion_rate" invisible="isUSD != True" />
+                    <field name="total_amount_converted" invisible="True"/>
+                    <field name="has_returned" />
+                    <!-- <field name="po_rr" /> -->
+                </xpath>
+                <!-- <xpath expr="//field[@name='total_amount']" position="attributes">
+                      <attribute name="readonly">True</attribute>
+                </xpath> -->
+                <xpath expr="//field[@name='picking_type_id']" position="attributes">
+                    <attribute name="readonly">state in ('partially_received',)</attribute>
+                    <!-- <attribute name="domain">
+                        [('company_id', '=', company_id)]
+                    </attribute> -->
+                    <attribute name="invisible">isZone == 'vismin' or isZone == 'all' </attribute>
+                    <attribute name="options"> 
+                        {'no_create': True, 'no_quick_create': True}
+                    </attribute>
+                </xpath>
+                <xpath expr="//field[@name='location_dest_id']" position="after">
+                    <!-- <field name="picking_type_id_duplicate" 
+                        invisible="isZone == 'lncr' or isZone == 'vismin'"  
+                        options="{'no_create': True, 'no_quick_create': True}"
+                        readonly="state in ('partially_received', 'done')"
+                        domain="[('company_id', '=', company_id), 
+                                ('code', '=', 'incoming')]" />
+                        <field name="picking_type_id_internal"
+                            options="{'no_create': True, 'no_quick_create': True}"
+                            readonly="state in ('partially_received', 'done')"
+                            
+                            invisible="isZone == 'all' or isZone != 'vismin'  or isZone != 'lncr' "
+                            domain="[('company_id', '=', company_id), ('code', 'in', ('incoming', 'outgoing', 'internal'))]" />
+                        <field name="picking_type_id_vismin" options="{'no_create': True, 'no_quick_create': True}" 
+                        readonly="state in ('partially_received', 'done')"
+                        invisible="isZone != 'vismin' "
+                    /> -->
+                    <field name="operation"  invisible="1"/>
+                    <field name="source_location"  invisible="picking_type_code in ('incoming', 'outgoing') "    required="picking_type_code in ('internal')"  />
+                    <field name="destination_location" invisible="picking_type_code in ('incoming')"  required="picking_type_code in ('internal')" /> 
+                </xpath>
+                <!-- 
+                <xpath expr="//field[@name='location_dest_id']" position="replace">
+                    <field name="location_dest_id" domain="[]"/>
+                </xpath> -->
+                <!-- <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='received_qty']" position="attributes">
+                    <attribute  name="invisible">not origin</attribute>
+                </xpath> -->
+                <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_id']" position="replace">
+                    <field name="product_id" readonly="state not in ['draft']" string="Product" style="width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='quantity']" position="attributes">
+                    <attribute name="readonly"> True </attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
+                    <attribute name="readonly"> state in ['cancel','done'] </attribute>
+                </xpath>
+                <!-- <xpath expr="//field[@name='picking_type_id']" position="replace">
+                      <field name="picking_type_id_dup" readonly="False" ></field>
+                </xpath> -->
+                <xpath expr="//field[@name='picking_type_id']" position="before">
+                      <field name="company_id" invisible="True" readonly="False"/>
+                </xpath>
+                <xpath expr="//field[@name='company_id']" position="after">
+                     <field name="company_id_report" required="True" readonly="state not in ['draft'] or origin"  />
+                </xpath>
+                <!-- <xpath expr="//field[@name='product_id']" position="after">
+                      <field name="product_id_vismin"     domain="[('location_name', '=', 'vm_ml_stock')]" optional="hide"  invisible="is_Zone == 'lncr'"  />
+                      <field name="is_Zone" />
+                </xpath> -->
+            </field>
+        </record>
+
+
+        <!-- Menu placed on the Dashboard Screen  -->
+        <record id="stock.action_picking_tree_incoming" model="ir.actions.act_window">
+            <field name="name">Receipts</field>
+            <field name="res_model">stock.picking</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[]</field>
+            <field name="context">{'contact_display': 'partner_address', 'restricted_picking_type_code': 'incoming', 'search_default_reception': 1} </field>
+        </record>
+
+        <record id="view_receiving_receipt_tree" model="ir.ui.view">
+            <field name="name">Receiving Receipts List</field>
+            <field name="model">stock.picking</field>
+            <field name="arch" type="xml">
+                <list string="All Receiving Receipts" default_order="name desc">
+                    <field name="name"/>
+                    <field name="scheduled_date"/>
+                    <field name="partner_id"/>
+                    <field name="company_id"/>
+                    <field name="origin"/>
+                    <field name="state"/>
+                    <field name="location_id"/>
+                    <field name="location_dest_id"/>
+                    <field name="picking_type_id"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_receiving_receipt_all" model="ir.actions.act_window">
+            <field name="name">Receiving Receipts</field>
+            <field name="res_model">stock.picking</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[("picking_type_code", "=", "incoming")]</field>
+            <!-- Search default by Status and PO Number -->
+            <field name="context">{'default_picking_type_code': 'incoming'}</field>
+        </record>
+
+        <menuitem id="menu_receiving_receipt_all"
+            name="RR"
+            web_icon="ml_development,static/description/receipt_icon.png"
+            sequence="11"
+            groups="ml_development.group_recieving_manager_inventory" 
+            action="action_receiving_receipt_all"/>
+    
+        <!-- Action: Open Move History View -->
+        <record id="action_move_history" model="ir.actions.act_window">
+            <field name="name">Item Move History</field>
+            <field name="res_model">stock.move.line</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{'group_by': 'product_id'}</field>
+            <!-- Basically i want you to domain the records here that has izone = 'lncr'  -->
+        </record>
+
+        <!-- MENUITEM FOR THE INTERNAL TRANSFER  -->
+        <record id="action_internal_transfer_all" model="ir.actions.act_window">
+            <field name="name">Internal Transfers</field>
+            <field name="res_model">stock.picking</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[("picking_type_code", "=", "internal")]</field>
+            <field name="context">
+                {
+                    'default_picking_type_code': 'internal',
+                    'search_default_group_by_company': 1,
+                    'group_by': ['company_id']
+                }
+            </field>
+        </record>
+        
+        <menuitem id="menu_internal_transfer"
+            name="IT"
+            sequence="12"
+            web_icon="ml_development,static/description/internal_transfer.png"
+            groups="ml_development.group_recieving_manager_inventory" 
+            action="action_internal_transfer_all"/>
+
+        <!-- Hide the Scrap menu item using XPath -->
+        <!-- <xpath expr="//menuitem[@name='Scrap']" position="attributes">
+                <attribute name="active">False</attribute>
+        </xpath> -->
+        <!-- <record id="custom_stock_move_line_action" model="ir.actions.act_window">
+                <field name="name">Custom Moves History</field>
+                <field name="res_model">stock.move.line</field>
+                <field name="view_mode">list,kanban,pivot,form</field>
+                <field name="view_id" ref="view_move_line_tree"/>
+                <field name="context">{'search_default_done': 1, 'create': 0, 'pivot_measures': ['quantity_product_uom', '__count__']}</field>
+                <field name="help" type="html">
+                    <p class="o_view_nocontent_empty_folder">
+                        There's no product move yet
+                    </p><p>
+                        This menu gives you the full traceability of inventory operations on a specific product.
+                        You can filter on the product to see all the past movements for the product.
+                    </p>
+                </field>
+        </record> -->
+
+        <!-- <record id="view_move_history_tree" model="ir.ui.view">
+            <field name="name">Item Move History List</field>
+            <field name="model">stock.move.line</field>
+            <field name="arch" type="xml">
+                <list string="Item Move History" default_order="date desc">
+                    <field name="date"/>
+                    <field name="product_id"/>  
+                    <field name="lot_id"/>
+                    <field name="location_id"/>
+                    <field name="location_dest_id"/>
+                    <field name="quantity"/>
+                    <field name="signed_qty"/>
+                    <field name="picking_id"/>
+                </list>
+            </field>
+        </record> -->
+
+        <record id="view_move_history_tree" model="ir.ui.view">
+            <field name="name">Item Move History List</field>
+            <field name="model">stock.move.line</field>
+            <field name="arch" type="xml">
+                <list string="Item Move History" default_order="date desc">
+                    <field name="date"/>
+                    <field name="product_id"/>  
+                    <field name="lot_id"/>
+                    <field name="location_id"/>
+                    <field name="location_dest_id"/>
+                    <field name="quantity" column_invisible="1"/>
+                    <!-- <field name="total_signed_qty"/> -->
+                    <field name="signed_qty"
+                        widget="float"
+                        decoration-danger="signed_qty &lt; 0"
+                        decoration-success="signed_qty &gt;= 0"/>
+                    <field name="picking_id"/>
+                </list>
+            </field>
+        </record>
+
+
+        <menuitem id="menu_move_history"
+            name="IMH"
+            web_icon="ml_development,static/description/move_history.png"
+            action="action_move_history"
+            groups="ml_development.group_recieving_manager_inventory,ml_development.group_stock_custodian" 
+            sequence="12"/>
+        
+        <record id="action_stock_quant_list" model="ir.actions.act_window">
+            <field name="name">Stock Overview</field>
+            <field name="res_model">stock.location</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{'group_by': 'usage'}</field>
+        </record>
+
+        <record id="view_location_form_inherit" model="ir.ui.view">
+            <field name="name">stock.warehouse.form.inherit.lncr.vismin</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group" position="inside">
+                    <group string="Zone">   
+                        <field name="lncr"/>
+                        <field name="vismin"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Directly go to product listing after clicking the Products menu inside the Inventory Module -->
+        <menuitem id="menu_stock_inventory_control" 
+            name="Products" parent="stock.menu_stock_root" 
+            action="stock.product_template_action_product" 
+            sequence="4"/>
+
+        <menuitem id="menu_stock_quant"
+            name="SO"
+            web_icon="ml_development,static/description/stock_overview.png"
+            action="action_stock_quant_list"
+            groups="ml_development.group_recieving_manager_inventory,ml_development.group_stock_custodian" 
+            sequence="16"/>
+        
+        <!-- Inherit Inventory Menu -->
+        <menuitem id="stock.menu_stock_root"
+            name="Inventory"
+            web_icon="stock,static/description/icon.png"
+            action="stock.stock_picking_type_action"
+            groups="base.group_system,ml_development.group_recieving_manager_inventory,ml_development.group_stock_custodian" 
+            sequence="140"/>
+
+        <record id="view_warehouse_form_inherit_lncr_vismin" model="ir.ui.view">
+            <field name="name">stock.warehouse.form.inherit.lncr.vismin</field>
+            <field name="model">stock.warehouse</field>
+            <field name="inherit_id" ref="stock.view_warehouse"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group" position="inside">
+                    <group string="Zone">
+                        <field name="lncr"/>
+                        <field name="vismin"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- stock.view_move_line_form  -->
+        <record id="view_move_line_form_inherit" model="ir.ui.view">
+            <field name="name">stock.move.line.form.inherit</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_move_line_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='state']" position="attributes">
+                    <attribute name="widget">statusbar</attribute>
+                    <attribute name="statusbar_visible">draft,confirmed,done</attribute>
+                </xpath>
+                <xpath expr="//field[@name='owner_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='lot_id']" position="before">
+                    <field name="remaining_quantity" string="Remaining Quantity"/>
+                    <field name="zone" />
+                </xpath>
+                <xpath expr="//sheet" position="after">
+                    <chatter/>
+                </xpath>
+
+
+
+            </field>
+        </record>
+
+        <!-- Extend the existing stock.quant tree view -->
+        <!-- <record id="view_stock_quant_tree_custom" model="ir.ui.view">
+            <field name="name">stock.quant.tree.custom</field>
+            <field name="model">stock.quant</field>
+            <field name="inherit_id" ref="stock.view_stock_quant_tree_editable"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='reserved_quantity']" position="replace">
+                    <field name="inventory_quantity_auto_apply" />
+                </xpath>
+                <xpath expr="//field[@name='product_uom_id']" position="after">
+                    <field name="zone" />
+                </xpath>
+              
+            </field>
+        </record> -->
+
+        <record id="view_uom_category_tree_inherit" model="ir.ui.view">
+            <field name="name">uom.category.list.inherit</field>
+            <field name="model">uom.category</field>
+            <field name="inherit_id" ref="uom.product_uom_categ_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//list" position="attributes">
+                    <attribute name="decoration-danger">name == 'Obsolete'</attribute>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="description" />
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Inherit Form View -->
+        <record id="view_uom_category_form_inherit" model="ir.ui.view">
+            <field name="name">uom.category.form.inherit</field>
+            <field name="model">uom.category</field>
+            <field name="inherit_id" ref="uom.product_uom_categ_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="description" />
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Stock Return  -->
+         <record id="ml_development_stock_return_picking_form_inherit" model="ir.ui.view">
+            <field name="name">stock.return.picking.form.inherit</field>
+            <field name="model">stock.return.picking</field>
+            <field name="inherit_id" ref="stock.view_stock_return_picking_form"/>
+            <field name="arch" type="xml">
+                <!-- Add a return reason field above the product_return_moves list -->
+                <xpath expr="//field[@name='product_return_moves']" position="before">
+                    <field name="return_reason" placeholder="Reason for Return"/>
+                </xpath>
+                <!-- Customize footer or add another button -->
+                <!-- <xpath expr="//footer" position="inside">
+                    <button name="action_custom_create_returns"
+                        string="Custom Return"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                </xpath> -->
+                <!-- Hide "Return All" button -->
+                <xpath expr="//footer/button[@name='action_create_returns_all']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <!-- Hide "Return for Exchange" button -->
+                <xpath expr="//footer/button[@name='action_create_exchanges']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='product_return_moves']/list" position="attributes">
+                    <attribute name="create">0</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

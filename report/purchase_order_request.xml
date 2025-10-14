@@ -1,0 +1,120 @@
+<odoo>
+    <data>
+        <!-- Custom Request for Quotation -->
+        <template id="ml_report_request_custom">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <!-- Adjusted Header -->
+                    <div class="header">
+                        <div class="row">
+                            <div style="text-align: center; width: 100%;">
+                                <img src="/ml_development/static/src/icons/ML.jpg" style="width:40%;"/>
+                                <p style="margin-top: 10px;">
+                                    <strong style="font-size: 20px;">MATERIALS MANAGEMENT DIVISION</strong><br/>
+                                    B. Benedicto St., North Reclamation Area, Cebu City<br/>
+                                    Telephone No. 380-3000 Local No. 11667
+                                </p>
+                            </div>
+                            <!-- Right-aligned "Purchase Order No." -->
+                            <div style="position: absolute; top: 30px; right: 30px; text-align: right;">
+                                <h5 style="margin: 0; font-size: 14px;">
+                                    REQUEST FOR QUOTATION <br/> 
+                                    ORDER No. <span t-field="o.name"/>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <t t-call="web.external_layout">
+                        <!-- Content Section -->
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            <div style="padding: 2.5rem;">
+                                <!-- Existing Content or Adjustments -->
+                                <table class="table table-sm o_main_table table-bordered" style="border: 1px solid #dee2e6; border-collapse: collapse; width: 100%;">
+                                    <thead>
+                                        <!-- First Section (Supplier and Delivery Information) -->
+                                        <tr>
+                                            <!-- First Row -->
+                                            <td colspan="4" style="border: 1px solid #dee2e6; padding: 8px;">
+                                                SUPPLIER: <span t-field="o.partner_id"/>
+                                            </td>
+                                            <td colspan="2" style="border: 1px solid #dee2e6; padding: 8px;">
+                                                DATE: <span t-field="o.date_planned"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <!-- Second Row -->
+                                            <td colspan="4" style="border: 1px solid #dee2e6; padding: 8px;">
+                                                DELIVER TO: <span t-field="o.deliver_to"/>
+                                            </td>
+                                            <td colspan="2" style="border: 1px solid #dee2e6; padding: 8px;">
+                                                TERMS: <span t-field="o.terms"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <!-- Third row  -->
+                                            <td colspan="4" style="border: 1px solid #dee2e6; padding: 8px;">
+                                                CORPORATION: <span t-field="o.company_id"/>  <!-- Assuming you have a "corporation_field" -->
+                                            </td>
+                                            <td colspan="2" style="border: 1px solid #dee2e6; padding: 8px;">
+                                                TIN: <span t-field="o.tin"/>  
+                                            </td>
+                                        </tr>
+                                        <!-- Second Section (Headers for Items) -->
+                                        <tr>
+                                            <td style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px;" class="text-center">
+                                                <strong>QTY</strong>
+                                            </td>
+                                            <td style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px;" class="text-center">
+                                                <strong>UNIT</strong>
+                                            </td>
+                                            <td style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px;" class="text-center">
+                                                <strong>DESCRIPTION</strong>
+                                            </td>
+                                            <td style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px;" class="text-center">
+                                                <strong>UNIT PRICE</strong>
+                                            </td>
+                                            <td style="border: 1px solid #dee2e6; background-color: #f8f9fa; padding: 8px;" class="text-center">
+                                                <strong>AMOUNT</strong>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="o.order_line" t-as="line">
+                                            <tr>
+                                                <td class="text-center" style="padding: 8px;"><span t-field="line.product_qty"/></td>
+                                                <td class="text-center" style="padding: 8px;"><span t-field="line.product_uom"/></td>
+                                                <td class="text-left" style="padding: 8px;"><span t-field="line.name"/></td>
+                                                <td class="text-center"></td>
+                                                <td class="text-center"></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                                <!-- Additional Footer or Notes -->
+                                <p> 
+                                    1. The prices and terms shown on this order are based on your quotation. We reserve the right to cancel, reject or return any or all of the items if details of delivery do not conform to specification on this order.  <br/> 
+                                    2. Please furnish the following for each delivery: a) Original Invoice and P.O. b) Delivery Receipt <br/>
+                                    3. If above items are not delivered on or before <span t-field="o.date_planned"/>, this P.O is cancelled and must be returned to M.Lhuillier,Phils.         
+                                </p>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <record id="ml_action_report_request_custom" model="ir.actions.report">
+            <field name="name">Request Quotation Report</field>
+            <field name="model">ml.request.quotation</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ml_development.ml_report_request_custom</field>
+            <field name="report_file">ml_development.ml_report_request_custom</field>
+            <field name="print_report_name">'Request for Quotation - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_ml_request_quotation"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="ml_default_paperformat"/>
+        </record>
+
+    </data>
+</odoo>

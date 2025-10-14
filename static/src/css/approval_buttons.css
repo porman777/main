@@ -1,0 +1,67 @@
+/* Approve Button */
+.btn-approve {
+    border: 1px solid #28a745;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #28a745;
+    background: transparent;
+    cursor: pointer;
+}
+
+.btn-approve:hover {
+    background: #28a745;
+    color: white;
+}
+
+/* Disapprove Button */
+.btn-disapprove {
+    border: 1px solid #dc3545;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #dc3545;
+    background: transparent;
+    cursor: pointer;
+}
+
+.btn-disapprove:hover {
+    background: #dc3545;
+    color: white;
+}
+
+/* More Details Button */
+.btn-details {
+    border: 1px solid #007bff;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #007bff;
+    background: transparent;
+    cursor: pointer;
+}
+
+.btn-details:hover {
+    background: #007bff;
+    color: white;
+}
+
+/* Change Button */
+.btn-change {
+    border: 1px solid #af8c0b;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #af8c0b;
+    background: transparent;
+    cursor: pointer;
+}
+
+.btn-change:hover {
+    background: #977809;
+    color: white;
+}

@@ -1,0 +1,42 @@
+<!-- Modification for Accounting Related Transactions -->
+<odoo>
+    <data>
+        <!-- Modify the Chart of Accounts, add additional fields -->
+        <record id="account_account_inherit" model="ir.ui.view">
+            <field name="name">account.account.inherit</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='accounting']//group[1]" position="inside">
+                    <group>
+                        <field name="account_id"/>
+                        <field name="current_account_code"/>
+                        <field name="fs_account_type"/>
+                    </group>
+                </xpath>
+                <xpath expr="//page[@name='accounting']//group[2]" position="inside">
+                    <group>
+                        <field name="normal_balance"/>
+                        <field name="isdefault"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+        
+        <record id="view_account_chart_list_inherit" model="ir.ui.view">
+            <field name="name">account.account.list.inherit</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_list" />
+            <field name="arch" type="xml">
+                <xpath expr="//list" position="inside">
+                    <field name="account_id" />
+                    <field name="current_account_code" />
+                    <field name="fs_account_type" />
+                    <field name="account_subtype" />
+                    <field name="acc_type" />
+                    <field name="account_category"/>
+                </xpath>
+            </field>
+        </record> 
+    </data>
+</odoo>

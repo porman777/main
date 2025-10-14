@@ -1,0 +1,52 @@
+<odoo>
+    <data>
+        <!-- Form View -->
+        <record id="view_ml_dashboard_form" model="ir.ui.view">
+        <field name="name">ml.dashboard.form</field>
+        <field name="model">ml.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Dashboard">
+                <sheet>
+                    <div class="o_dashboard">
+                        <div class="o_dashboard_row">
+                            <div class="o_dashboard_card">
+                                <h3>Total Purchase Orders</h3>
+                                <div class="o_dashboard_value">
+                                    <field name="total_purchase_orders" readonly="1"/>
+                                </div>
+                            </div>
+                            <div class="o_dashboard_card">
+                                <h3>Pending Approvals</h3>
+                                <div class="o_dashboard_value">
+                                    <field name="pending_approvals" readonly="1"/>
+                                </div>
+                            </div>
+                            <div class="o_dashboard_card">
+                                <h3>Total Purchase Amount</h3>
+                                <div class="o_dashboard_value">
+                                    <field name="total_purchase_amount" readonly="1"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+        </record>
+        
+        <!-- Action for Dashboard -->
+        <record id="action_ml_dashboard_form" model="ir.actions.act_window">
+            <field name="name">MMD Dashboard</field>
+            <field name="res_model">ml.dashboard</field>
+            <field name="view_mode">form</field>
+            <field name="target">current</field>
+        </record>
+
+        <!-- <menuitem 
+            id="ml_dashboard_menu" name="MMD Dashboard" action="action_ml_dashboard_form" sequence="0"
+            web_icon="ml_development,static/description/dashboard_icon.png"
+            groups="base.group_system,group_purchase_purchaser,group_purchase_mmd_manager,group_purchase_vpo,group_purchase_mmd_supervisor,group_purchase_president,group_purchase_cfo" 
+        /> -->
+
+    </data>
+</odoo>

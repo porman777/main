@@ -1,0 +1,500 @@
+<odoo>
+    <!-- Modification of Purchase Order Form  -->
+    <record id="purchase.purchase_form_action" model="ir.actions.act_window">
+        <field name="name">Purchase Orders</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'search_default_status': True}</field>
+    </record>
+
+    <record id="view_login_custom" model="ir.ui.view">
+        <field name="name">ML Views</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Header -->
+            <xpath expr="//div[@class='oe_title']" position="replace">
+                <span class="o_form_label">Purchase Order </span>
+                <h1 class="d-flex">
+                    <field name="priority" widget="priority" class="me-3"/>
+                    <field name="name" readonly="True"/>
+                </h1>
+            </xpath>    
+
+            <!-- Make payment_term_id invisible -->
+            <xpath expr="//field[@name='payment_term_id']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+                        
+            <!-- Make partner_ref readonly and invisible -->
+            <xpath expr="//field[@name='partner_ref']" position="attributes">
+                <attribute name="readonly">state not in ['draft','request_for_change']</attribute>
+                <attribute name="invisible">True</attribute>
+            </xpath>
+
+            <!-- Hide the Order Deadline -->
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+
+            <!-- Modify the Picking Type -->
+            <xpath expr="//field[@name='picking_type_id']" position="replace">
+                <field name="picking_type_id" 
+                    domain="[('code', '=', 'incoming'), '|', ('warehouse_id', '=', False),('warehouse_id.company_id', '=', company_id)]"
+                    options="{'no_create': True}"
+                    groups="stock.group_stock_multi_locations"
+                    readonly="True"
+                    invisible="True"
+                />
+            </xpath>
+
+            <!-- Hide Expected Arrival (Original) -->
+            <xpath expr="//field[@name='date_planned']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+
+            <!-- Modify Label (Expected Arrival) -->
+            <xpath expr="//label[@for='date_planned']" position="attributes">
+                <attribute name="for">expected_arrival</attribute>
+                <attribute name="invisible">False</attribute>
+            </xpath>
+
+            <!-- Add Expected Arrival -->
+            <xpath expr="//field[@name='date_planned']" position="after">
+                <field name="expected_arrival" required="True" readonly="state != 'draft'"/>
+                <field name="date_planned" invisible="True" />
+            </xpath>
+
+            <!-- Set readonly currency -->
+            <xpath expr="//field[@name='currency_id'][1]" position="attributes">
+                <attribute name="readonly">state not in ['draft']</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="statusbar_visible">
+                    draft, submitted_to_manager, submitted_to_president, request_for_change, purchase,cancel
+                </attribute>
+            </xpath>
+
+            <xpath expr="//div[@name='reminder']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='print_quotation']" position="attributes">
+                <attribute name="invisible">state != 'locked'</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_confirm']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Make date_order readonly -->
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute name="readonly">state not in ['draft', 'request_for_change']</attribute>
+            </xpath>
+
+            <!-- Modify partner_id -->
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="domain">[('supplier_rank','>', 0),('x_studio_zone','=','lncr')]</attribute>
+                <attribute name="readonly">state not in ['draft','request_for_change']</attribute>
+                <attribute name="required">isZone == 'lncr'</attribute>
+                <attribute name="invisible">isZone != 'lncr'</attribute>
+                <attribute name="options">{'no_quick_create': True, 'no_quick_create': True}</attribute>
+            </xpath>
+
+            <!-- Div on the left -->
+            <xpath expr="//field[@name='partner_ref']" position="before">
+                <field name="for_ho" invisible="True"/>
+                <!-- Add 2 partner_id for VISMIN and ALL -->
+                <field name="partner_id" required="isZone == 'vismin'" readonly="state != 'draft'" domain="[('supplier_rank','>', 0),('x_studio_zone','=','vismin')]" invisible="isZone != 'vismin'" options="{'no_create': True, 'no_quick_create': True}"/>
+                <field name="partner_id" required="isZone == 'all'" readonly="state != 'draft'" domain="[('supplier_rank','>', 0)]" invisible="isZone != 'all'" options="{'no_create': True, 'no_quick_create': True}"/>
+                <field name="company_id" invisible="True" />
+                <field name="corporation" string="Corporation" readonly="state not in ['draft','request_for_change']" />
+                <field name="tin" string="Corporate TIN" readonly="state not in ['request_for_change']" />
+                <field name="tin_related" invisible="1" />
+                <field name="isZone" invisible="True" />
+                <field name="branch" readonly="state not in ['draft','request_for_change']" options="{'no_create': True, 'no_quick_create': True}" required="isZone == 'lncr'" domain="[('zone','in',['ncr','luzon'])]" invisible="isZone != 'lncr'" />
+                <field name="branch" readonly="state not in ['draft','request_for_change']" options="{'no_create': True, 'no_quick_create': True}" required="isZone == 'vismin'" domain="[('zone','in',['visayas','mindanao'])]" invisible="isZone != 'vismin'" />
+                <field name="branch" readonly="state not in ['draft','request_for_change']" options="{'no_create': True, 'no_quick_create': True}" required="isZone == 'all'" invisible="isZone != 'all'" />
+                <field name="zone" />
+                <field name="corporation_id" invisible="True" />
+                <field name="for_change" invisible="True"  />
+                <field name="description" required="True" readonly="state not in ['draft','request_for_change']" />
+                <field name="remarks"/>
+                <field name="amount_total" invisible="True" />
+                <field name="received_amount" invisible="True"  />
+                <field name="total_qty" invisible="True"  />
+                <field name="vatable" invisible="True"  />
+                <field name="isOrigin" invisible="True" />
+            </xpath>
+
+            <!-- Remove the original tax_totals widget -->
+            <xpath expr="//field[@name='tax_totals']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='tax_totals']" position="after">
+                <div name="custom_totals" class="oe_right" invisible="not order_line">
+                    <div class="d-flex justify-content-end mb-1">
+                        <span class="o_form_label pe-2">
+                            <strong>Subtotal</strong>
+                        </span>
+                        <field name="amount_untaxed" readonly="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    </div>
+                    <div class="d-flex justify-content-end mb-1">
+                        <span class="o_form_label pe-2">
+                            <strong>VAT Amount</strong>
+                        </span>
+                        <field name="amount_tax" readonly="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <span class="o_form_label pe-2">
+                            <strong>Total Amount</strong>
+                        </span>
+                        <field name="amount_total" readonly="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    </div>
+                </div>
+            </xpath>
+
+            <!-- Div on the right -->
+            <xpath expr="//div[@name='date_approve']" position="after">
+                <field name="isAdmin" invisible="True" />
+                <field name="deliver_to" invisible="isAdmin != True" domain="[('company_id', '=', company_id)]"/> 
+                <field name="terms" required="True" readonly="state not in ['draft', 'request_for_change']" />
+            </xpath>
+
+            <!-- Hide Buttons -->
+            <xpath expr="//header" position="replace">
+                <header>
+                    <!-- States -->
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted_to_manager,submitted_to_vpo,submitted_to_president,purchase,po_sent" readonly="True" invisible="for_ho == True"  options="{'clickable': True}" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted_to_manager,submitted_to_president,purchase,po_sent" invisible="for_ho == False" readonly="True" options="{'clickable': True}" />
+                   
+                    <!-- Purchaser -->
+                    <button name="send_po_by_email" invisible="state != 'purchase'" string="Send PO by Email" type="object" class="oe_highlight" context="{'send_rfq':False}" data-hotkey="g" groups="ml_development.group_purchase_purchaser" />
+                    <button name="send_po_by_email" invisible="state != 'po_sent'" string="Re-send PO" type="object" class="oe_highlight" context="{'send_rfq':False}" data-hotkey="g" groups="ml_development.group_purchase_purchaser" />
+                    <button name="request_for_cancel" invisible="state not in ['purchase']" string="Request For Cancel" groups="ml_development.group_purchase_purchaser" type="object" data-hotkey="x"/>
+                    <button name="submitted_to_manager" string="Submit To Manager" type="object" invisible= "state not in ('draft')"  groups="ml_development.group_purchase_purchaser" class="oe_highlight" />
+                    
+                    <!-- Manager -->
+                    <button name="submitted_to_president_cfo" string="Submit To President" type="object" invisible="state != 'submitted_to_manager' or for_ho == False" groups="ml_development.group_purchase_mmd_manager" class="oe_highlight" /> 
+                    <button name="submitted_to_vpo" string="Submit To VPO" type="object" invisible="state != 'submitted_to_manager' or for_ho == True " groups="ml_development.group_purchase_mmd_manager" class="oe_highlight" />
+                    <button name="rejected" type="object" string="Disapprove" invisible="state not in ['submitted_to_manager', 'submitted_to_vpo'] or for_ho == True" groups="ml_development.group_purchase_mmd_manager" confirm="Are you sure you want to disapprove this PO?"  data-hotkey="z"/>
+                    <button name="rejected" type="object" string="Disapprove" invisible="state not in ['submitted_to_manager'] or for_ho == False" groups="ml_development.group_purchase_mmd_manager" data-hotkey="z" confirm="Are you sure you want to disapprove this PO?"/>
+                    <button name="request_for_change" string="Request For Change" type="object" invisible="state not in ['submitted_to_manager','submitted_to_vpo']" groups="ml_development.group_purchase_mmd_manager" />
+                    <button name="button_cancel" invisible="state != 'to_cancel'" string="Cancel" groups="ml_development.group_purchase_mmd_manager" type="object" data-hotkey="x" confirm="Are you sure you want to cancel this PO?" />
+
+                    <!-- SuperVisor -->
+                    <button name="submitted_to_manager_request" string="Submit To Manager" type="object" invisible="state not in ['request_for_change']" groups="ml_development.group_purchase_mmd_supervisor" class="oe_highlight"/>
+                    <button name="submitted_to_president_cfo" string="Submit To President" type="object" invisible="state != 'submitted_to_vpo' or for_ho == False" groups="ml_development.group_purchase_mmd_supervisor" class="oe_highlight" /> 
+                    <button name="rejected" type="object" string="Disapprove" invisible="state not in ['request_for_change']" groups="ml_development.group_purchase_mmd_supervisor" data-hotkey="z" confirm="Are you sure you want to disapprove this PO?"/>
+                    
+                    <!-- VPO -->
+                    <button name="submitted_to_president_cfo" string="Submit To President/CFO" type="object" invisible="state != 'submitted_to_vpo' or for_ho == True" groups="ml_development.group_purchase_vpo"  class="oe_highlight" />
+                    <button name="rejected" type="object" string="Disapprove" invisible="state not in ['submitted_to_vpo', 'submitted_to_president']" groups="ml_development.group_purchase_vpo" data-hotkey="z" confirm="Are you sure you want to disapprove this PO?"/>
+                    <button name="request_for_change" string="Request For Change" type="object" invisible="state not in ['submitted_to_vpo', 'submitted_to_president']" groups="ml_development.group_purchase_vpo" />
+
+                    <!-- CFO and President -->
+                    <button name="approve" type="object" string="Approve Order" class="oe_highlight" invisible="state != 'submitted_to_president'" groups="ml_development.group_purchase_president,ml_development.group_purchase_cfo"  data-hotkey="z"/>
+                    <button name="rejected" type="object" string="Disapprove" invisible="state not in ['submitted_to_president']" groups="ml_development.group_purchase_cfo,ml_development.group_purchase_president" data-hotkey="z" confirm="Are you sure you want to disapprove this PO?"/>
+                    <button name="request_for_change" string="Request For Change" type="object" invisible="state not in ['submitted_to_president']" groups="ml_development.group_purchase_cfo,ml_development.group_purchase_president" />
+                    
+                    <!-- Hidden Buttons -->
+                    <button name="button_confirm" type="object" invisible="True" string="Confirm Order" context="{'validate_analytic': True}" class="oe_highlight" id="bid_confirm" data-hotkey="q"/>
+                    <button name="action_generate_custom_report" invisible="True" string="Generate Report" type="object" class="btn-primary"/>
+                    <button name="action_view_picking" invisible="True" string="Receive Products" class="oe_highlight" type="object" data-hotkey="y" />
+                    <button name="confirm_reminder_mail" string="Confirm Receipt Date" type="object"  invisible="True" groups="base.group_no_one"/>
+                    <button name="print_quotation" string="Print RFQ" type="object" invisible="1" class="oe_highlight" groups="base.group_user" data-hotkey="k"/>
+                    <button name="action_create_custom_bill" type="object" invisible="1" string="Create Custom Bill" class="btn-primary"/>
+                </header>
+            </xpath> 
+            
+            <xpath expr="//page[@name='products']/field[@name='order_line']/list" position="replace">
+                <list name="po_order_line" string="Purchase Order Lines" editable="bottom">
+                    <control>
+                        <create name="add_product_control" string="Add a product"/>
+                    </control>
+                    <field name="tax_calculation_rounding_method" column_invisible="True"/>
+                    <field name="display_type" column_invisible="True"/>
+                    <field name="company_id" column_invisible="True"/>
+                    <field name="currency_id" column_invisible="True"/>
+                    <field name="state" column_invisible="True"/>
+                    <field name="product_type" column_invisible="True"/>
+                    <field name="product_uom" column_invisible="True" groups="!uom.group_uom"/>
+                    <field name="product_uom_category_id" column_invisible="True" />
+                    <field name="invoice_lines" column_invisible="True"/>
+                    <field name="sequence" widget="handle"/>
+                    <field name="product_id" column_invisible="True" />
+                    <field name="product_tmpl_id" options="{'no_quick_create': True}" 
+                        widget="product_label_section_and_note_field"
+                        readonly="state in ('purchase', 'to approve', 'done', 'cancel')" 
+                        required="not display_type" string="Product"
+                        context="{'partner_id': parent.partner_id, 'quantity': product_qty, 'company_id': parent.company_id, 'use_partner_name': False}" 
+                        force_save="True" domain="[('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', 'parent_of', parent.company_id)]" />
+                    <field name="item_code" string="Item Code" optional="hide" />
+                    <field name="product_qty" readonly="not product_id" />
+                    <field name="name" widget="section_and_note_text"/>
+                    <field name="product_uom" string="Units" readonly="state in ('purchase', 'done', 'cancel')" required="not display_type" options="{'no_open': True}" force_save="1" optional="show"/>
+                    <field name="date_planned" column_invisible="True" required="not display_type" force_save="1"/>
+                    <field name="analytic_distribution" widget="analytic_distribution" column_invisible="True" groups="analytic.group_analytic_accounting" options="{'product_field': 'product_id', 'business_domain': 'purchase_order', 'amount_field': 'price_subtotal'}"/>
+                    <field name="qty_received_manual" column_invisible="True"/>
+                    <field name="qty_received_method" column_invisible="True"/>
+                    <field name="qty_received" string="Received" column_invisible="True" optional="show"/>
+                    <field name="qty_invoiced" string="Billed" column_invisible="True" optional="show"/>
+                    <field name="product_packaging_qty" invisible="not product_id or not product_packaging_id" groups="product.group_stock_packaging" optional="show"/>
+                    <field name="product_packaging_id" invisible="not product_id" context="{'default_product_id': product_id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}" groups="product.group_stock_packaging" optional="show"/>
+                    <field name="price_unit" readonly="qty_invoiced != 0"/>
+                    <button name="action_purchase_history" type="object" icon="fa-history" title="Purchase History" invisible="not id"/>
+                    <field name="taxes_id" optional="hide" widget="many2many_tags" domain="[('type_tax_use', '=', 'purchase'),('active', '=', True)]" context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" options="{'no_create': True}"  />
+                    <field name="tax_duplicate" domain="[('type_tax_use', '=', 'purchase'),('active', '=', True)]" options="{'no_create': True}" />
+                    <field name="discount" string="Disc.%" readonly="qty_invoiced != 0" column_invisible="True"/>
+                    <field name="amount" column_invisible="True" />
+                    <field name="price_subtotal" string="Tax excl."/>
+                    <field name="price_total" string="Tax incl." column_invisible="parent.tax_calculation_rounding_method == 'round_globally'"/>     
+                </list>
+            </xpath>
+            <!-- Order Line Duplicate -->
+            <xpath expr="//page[@name='products']/field[@name='order_line']" position="after">
+                <field name="order_line" readonly="True" groups="ml_development.group_purchase_mmd_manager,ml_development.group_purchase_vpo,ml_development.group_purchase_president,ml_development.group_purchase_cfo">
+                    <list name="po_order_line_duplicate" string="Purchase Order Lines Duplicate" editable="bottom">
+                        <control>
+                            <create name="add_product_control" string="Add a product"/>
+                        </control>
+                        <field name="tax_calculation_rounding_method" column_invisible="True"/>
+                        <field name="display_type" column_invisible="True"/>
+                        <field name="company_id" column_invisible="True"/>
+                        <field name="currency_id" column_invisible="True"/>
+                        <field name="state" column_invisible="True"/>
+                        <field name="product_type" column_invisible="True"/>
+                        <field name="product_uom" column_invisible="True" groups="!uom.group_uom"/>
+                        <field name="product_uom_category_id" column_invisible="True" />
+                        <field name="invoice_lines" column_invisible="True"/>
+                        <field name="sequence" widget="handle"/>
+                        <field name="product_id" column_invisible="True" />
+                        <field name="product_tmpl_id" options="{'no_quick_create': True}" 
+                            widget="product_label_section_and_note_field"
+                            readonly="state in ('purchase', 'to approve', 'done', 'cancel')" 
+                            required="not display_type" string="Product"
+                            context="{'partner_id': parent.partner_id, 'quantity': product_qty, 'company_id': parent.company_id, 'use_partner_name': False}" 
+                            force_save="True" domain="[('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', 'parent_of', parent.company_id)]" />
+                        <field name="item_code" string="Item Code" optional="hide" />
+                        <field name="product_qty" readonly="not product_id" />
+                        <field name="name" widget="section_and_note_text"/>
+                        <field name="product_uom" string="Units" readonly="state in ('purchase', 'done', 'cancel')" required="not display_type" options="{'no_open': True}" force_save="1" optional="show"/>
+                        <field name="date_planned" column_invisible="True" required="not display_type" force_save="1"/>
+                        <field name="analytic_distribution" widget="analytic_distribution" column_invisible="True" groups="analytic.group_analytic_accounting" options="{'product_field': 'product_id', 'business_domain': 'purchase_order', 'amount_field': 'price_subtotal'}"/>
+                        <field name="qty_received_manual" column_invisible="True"/>
+                        <field name="qty_received_method" column_invisible="True"/>
+                        <field name="qty_received" string="Received" column_invisible="True" optional="show"/>
+                        <field name="qty_invoiced" string="Billed" column_invisible="True" optional="show"/>
+                        <field name="product_packaging_qty" invisible="not product_id or not product_packaging_id" groups="product.group_stock_packaging" optional="show"/>
+                        <field name="product_packaging_id" invisible="not product_id" context="{'default_product_id': product_id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}" groups="product.group_stock_packaging" optional="show"/>
+                        <field name="price_unit" readonly="qty_invoiced != 0"/>
+                        <button name="action_purchase_history" type="object" icon="fa-history" title="Purchase History" invisible="not id"/>
+                        <field name="taxes_id" optional="hide" widget="many2many_tags" domain="[('type_tax_use', '=', 'purchase'),('active', '=', True)]" context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" options="{'no_create': True}"  />
+                        <field name="tax_duplicate" domain="[('type_tax_use', '=', 'purchase'),('active', '=', True)]" options="{'no_create': True}" />
+                        <field name="discount" string="Disc.%" readonly="qty_invoiced != 0" column_invisible="True"/>
+                        <field name="price_subtotal" string="Tax excl." column_invisible="True"/>
+                        <field name="amount" />
+                        <field name="price_total" string="Tax incl." column_invisible="parent.tax_calculation_rounding_method == 'round_globally'"/>   
+                    </list>
+                </field>
+            </xpath>
+            
+            <xpath expr="//field[@name='order_line']" position="attributes"> 
+                <attribute name="readonly">state not in ['draft','request_for_change']</attribute>
+            </xpath>
+        </field>
+    </record>  
+    
+    <record id="purchase_order_inherit_view_delivery" model="ir.ui.view">
+        <field name="name">purchase_order_inherit_view_delivery.view.form.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase_stock.purchase_order_view_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@class='oe_link']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="purchase_order_view_tree_custom" model="ir.ui.view">
+        <field name="name">purchase.order.tree.custom</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="replace">
+                <list decoration-muted="state == 'cancel'" decoration-info="invoice_status == 'to invoice'" string="Purchase Order" class="o_purchase_order" sample="1">
+                    <header>
+                        <button name="action_create_invoice" type="object" string="Create Bills"/>
+                    </header>
+                    <field name="priority" optional="show" widget="priority" nolabel="1"/>
+                    <field name="partner_ref" optional="hide"/>
+                    <field name="name" string="Reference" readonly="1" decoration-bf="1" decoration-info="state in ('draft','sent')"/>
+                    <field name="origin" string="RFQ Reference" />
+                    <field name="date_approve" widget="date" column_invisible="context.get('quotation_only', False)" optional="show"/>
+                    <field name="partner_id" readonly="state in ['cancel', 'done', 'purchase']"/>
+                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}" optional="show" readonly="state in ['cancel', 'done', 'purchase']"/>
+                    <field name="company_id" groups="!base.group_multi_company" column_invisible="True" readonly="state in ['cancel', 'done', 'purchase']"/>
+                    <field name="user_id" column_invisible="True" widget="many2one_avatar_user" />
+                    <field name="date_order" column_invisible="not context.get('quotation_only', False)" readonly="state in ['cancel', 'done', 'purchase']" optional="show"/>
+                    <field name="activity_ids" column_invisible="True" widget="list_activity" optional="show"/>
+                    <field name="amount_untaxed" sum="Total Untaxed amount" string="Untaxed" widget="monetary" optional="hide"/>
+                    <field name="amount_total" sum="Total amount" widget="monetary" optional="show" decoration-bf="1"/>
+                    <field name="currency_id" column_invisible="True" readonly="state in ['cancel', 'done', 'purchase']"/>
+                    <field name="for_ho" />
+
+                    <!-- Make the 'state' field visible -->
+                    <field name="state" widget="badge" string='Status' decoration-success="state == 'purchase' or state == 'done'" decoration-warning="state == 'to approve'" decoration-info="state == 'draft' or state == 'sent'" />
+                    <field name="invoice_status" column_invisible="True" widget="badge" decoration-success="invoice_status == 'invoiced'" decoration-info="invoice_status == 'to invoice'" optional="show"/>
+                    <field name="date_planned" column_invisible="context.get('quotation_only', False)" optional="show"/>
+                </list>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add search default (By Source document) -->
+    <record id="purchase_order_inherit_search_view" model="ir.ui.view">
+        <field name="name">purchase.order.inherit.search.view</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_search"/>
+        <field name="arch" type="xml">
+            <!-- Add new filter: Source Document and Status -->
+            <xpath expr="//filter[@name='order_date']" position="after">
+                <filter string="Source Document" name="origin" domain="[]" context="{'group_by': 'origin'}"/>
+                <filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem
+        id="purchase.menu_purchase_root"
+        groups="group_purchase_purchaser,group_purchase_mmd_manager,group_purchase_vpo,group_purchase_mmd_supervisor"
+        name="PO"
+        sequence="10"/>
+    
+    <menuitem
+        id="purchase.menu_purchase_form_action"
+        name="Purchase Order"
+        parent="purchase.menu_purchase_root"
+        action="purchase.purchase_form_action"
+        sequence="0"/>
+
+    <menuitem
+        id="purchase.menu_procurement_partner_contact_form"
+        name="Products"
+        action="purchase.product_normal_action_puchased"
+        parent="purchase.menu_purchase_root"
+        sequence="1"/>
+
+    <!-- Inherit Vendor Menuitem (Change Parent menu) -->
+    <record id="purchase.menu_procurement_management_supplier_name" model="ir.ui.menu">
+        <field name="parent_id" ref="purchase.menu_purchase_config"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- Inherit Vendor Pricelist sequence -->
+    <record id="purchase.menu_product_pricelist_action2_purchase" model="ir.ui.menu">
+        <field name="sequence">11</field>
+    </record>
+    
+    <!-- Define the action for the ml.branches model -->
+    <record id="action_ml_branches" model="ir.actions.act_window">
+        <field name="name">Branches</field>
+        <field name="res_model">res.company.branches</field>
+        <field name="view_mode">list,form</field>
+        <field name="help">Manage Company Branches from this menu.</field>
+    </record>
+
+    <menuitem id="menu_branches_config"
+        name="Branches"
+        parent="purchase.menu_purchase_config"
+        action="ml_development.action_ml_branches"
+    />
+
+    <!-- Define the tree view (optional if not already defined elsewhere) -->
+    <record id="view_ml_branches_tree" model="ir.ui.view">
+        <field name="name">ml.branches.tree</field>
+        <field name="model">res.company.branches</field>
+        <field name="arch" type="xml"> 
+            <list> 
+            <!-- add -->
+                <field name="branch_name"/>
+                <field name="branch_id"/>
+                <field name="area"/>
+                <field name="area_id"/>
+                <field name="region"/>
+                <field name="region_id"/>
+                <field name="zone"/>
+                <field name="zone_id"/>
+                <field name="status"/>
+                <field name="company_id"/>
+                <field name="head_office"/>
+                <field name="tin"/>
+                <field name="partner_id" invisible="True"/>
+                <field name="branch_manager_id"/>
+                <field name="am_email"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ml_branches_form" model="ir.ui.view">
+        <field name="name">ml.branches.form</field>
+        <field name="model">res.company.branches</field>
+        <field name="arch" type="xml">
+            <form string="Manage Branches">
+                <sheet>
+                    <!-- Create a group for general fields -->
+                    <group>
+                        <!-- Divide into 2 columns for a better layout -->
+                        <group col="2">
+                            <field name="branch_name"/>
+                            <field name="branch_id"/>
+                        </group>
+                        
+                        <group col="2">
+                            <field name="area"/>
+                            <field name="area_id"/>
+                        </group>
+                        
+                        <group col="2">
+                            <field name="region"/>
+                            <field name="region_id"/>
+                        </group>
+                        
+                        <group col="2">
+                            <field name="zone"/>
+                            <field name="zone_id"/>
+                        </group>
+                        <!-- Fields that can span the entire row -->
+                        <group>
+                            <field name="status"/>
+                        </group>
+                        <group col="2">
+                            <field name="company_id"/>
+                            <field name="head_office"/>
+                        </group>
+                        <group>
+                            <field name="tin"/>
+                        </group>
+
+                        <group>
+                            <field name="partner_id" invisible="True"/>
+                            <field name="branch_manager_id"/>
+                            <field name="location_dest_id" />
+                            <field name="am_email"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_res_company_branches_import" model="ir.actions.act_window">
+        <field name="name">Import Branches</field>
+        <field name="res_model">res.company.branches</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    
+</odoo>

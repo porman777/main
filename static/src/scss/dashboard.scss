@@ -1,0 +1,30 @@
+.o_dashboard {
+    padding: 20px;
+}
+
+.o_dashboard_row {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.o_dashboard_card {
+    flex: 1;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.o_dashboard_card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.o_dashboard_value {
+    font-size: 2rem;
+    color: #007bff;
+    font-weight: bold;
+}

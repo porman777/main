@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    
+        <!-- Sequence for ml.purchase.order -->
+        <record id="ml_purchase_order_sequence_lncr" model="ir.sequence">
+            <field name="name">Purchase Order Sequence (LNCR)</field>
+            <field name="code">purchase.order.lncr</field>
+            <field name="prefix">LN/P</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="ml_purchase_order_sequence_vismin" model="ir.sequence">
+            <field name="name">Purchase Order Sequence (VISMIN)</field>
+            <field name="code">purchase.order.vismin</field>
+            <field name="prefix">VM/P</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

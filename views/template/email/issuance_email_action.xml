@@ -1,0 +1,22 @@
+<odoo>
+    <data noupdate="1">
+        <record id="action_email_compose_issuance" model="ir.actions.act_window">
+            <field name="name">Send Email</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">mail.compose.message</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="mail.email_compose_message_wizard_form"/>
+            <field name="target">new</field>
+            <field name="context">{  
+                "default_model": "issuance.form",  
+                "default_res_id": active_id,  
+                "default_use_template": true,  
+                "default_template_id": ref("ml_development.email_template_issuance"),  
+                "default_composition_mode": "comment",  
+                "default_email_to": object.assigned_to,  
+                "default_partner_ids": [],  
+                "force_email_to_readonly": True  
+            }</field>
+        </record>
+    </data>
+</odoo>

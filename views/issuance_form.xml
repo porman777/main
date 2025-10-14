@@ -28,6 +28,7 @@
                         invisible="state not in ['sent']" />
                 </header>
                 <sheet>
+                
                     <div class="oe_title">
                         <h1 class="d-flex">
                             <field name="name" readonly="1"/>

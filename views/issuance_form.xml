@@ -4,7 +4,7 @@
         <field name="name">issuance.form.view.form</field>
         <field name="model">issuance.form</field>
         <field name="arch" type="xml">
-            <form string="Issuance Form">
+            <form string="Issuance Form"> 
                 <header>
                     <button name="button_approve" 
                             type="object" 

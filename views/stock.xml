@@ -19,6 +19,9 @@
             </field>
         </record>
 
+
+        
+
         <!-- Hide unnecessary fields and buttons in product form -->
         <record id="view_product_template_form_inherit" model="ir.ui.view">
             <field name="name">product.template.form.inherit</field>

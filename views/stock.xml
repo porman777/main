@@ -72,7 +72,6 @@
                 </xpath>
             </field>
         </record>
-
         <!-- 
         <record id="view_product_template_form_inherit" model="ir.ui.view">
             <field name="name">product.product.template.form</field>
@@ -762,3 +761,4 @@
     </data>
 
 </odoo>
+

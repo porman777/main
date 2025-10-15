@@ -124,7 +124,6 @@
                 </xpath>
             </field>
         </record>
-
         <!-- <odoo>
             <record id="inherit_product_template_tree_view" model="ir.ui.view">
                 <field name="name">product.template.product.list.inherit</field>

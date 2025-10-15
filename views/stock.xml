@@ -161,7 +161,6 @@
                 </xpath>
             </field>
         </record>
-
         <record id="inherit_stock_template_4" model="ir.ui.view">
             <field name="name">inherit_stock_template_4.form.inherit</field>
             <field name="model">product.template</field>

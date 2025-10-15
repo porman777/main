@@ -71,8 +71,6 @@
                 <xpath expr="//label[@for='standard_price']" position="before">
                     <field name="uom_id" class="oe_inline" options="{'no_create': True}"/>
                 </xpath>
-
-                
             </field>
         </record>
 

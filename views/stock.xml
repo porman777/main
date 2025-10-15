@@ -180,7 +180,6 @@
                 </xpath>
             </field>
         </record>
-
         <!-- Modification of Receipt Form  -->
         <record id="stock_picking_form_inherit" model="ir.ui.view">
             <field name="name">stock.picking.form.inherit</field>

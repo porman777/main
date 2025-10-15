@@ -38,7 +38,6 @@
                     <field name="trade_name_supplier" options="{'no_quick_create': True}" domain="[('supplier_rank','>', 0),('x_studio_zone','=','lncr')]" invisible="is_Zone != 'vismin'"/>
                     <field name="trade_name_supplier" options="{'no_quick_create': True}" domain="[('supplier_rank','>', 0),('x_studio_zone','=','vismin')]" invisible="is_Zone != 'lncr'"/>    
                     <field name="is_Zone" invisible="True"/>   
-
                     <field name="item_code"/>
                     <field name="item_description"/>
                     <field name="suggested_item_type" />
@@ -761,4 +760,5 @@
             </field>
         </record>
     </data>
+
 </odoo>

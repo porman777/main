@@ -8,7 +8,7 @@
       <header position="inside">
             <button name="%(report_purchase_order_custom)d"
                     string="Print IPO"
-                    type="action"
+                    type="action"    
                     invisible="x_purchase_type != 'import'"
                     class="btn-primary"/>
             <button name="%(report_purchase_order_custom)d"
@@ -55,4 +55,5 @@
     </field>
  </record>    
 </odoo>
+
 

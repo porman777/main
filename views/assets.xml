@@ -5,5 +5,5 @@
                 <script type="text/javascript" src="/asterisk_required_fields/static/src/js/form_label_patch.js"/>
             </xpath>
         </xpath>
-    </template>
+    </template>    
 </odoo>

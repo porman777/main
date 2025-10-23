@@ -31,7 +31,7 @@
          <field name="x_checked_by_date" widget="datetime"/>
       </xpath> -->
 
-
+      
       <xpath expr="//notebook" position="inside">
         <page string="Noted By">
           <group>
@@ -55,3 +55,4 @@
     </field>
  </record>    
 </odoo>
+

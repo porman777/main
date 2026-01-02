@@ -4,8 +4,7 @@
     <field name="model">hr.expense</field>
     <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
     <field name="arch" type="xml">
-<!-- Added comment for testing -->
-  <!-- Added comment for testing -->    
+
         <xpath expr="//field[@name='employee_id']/.." position="before">
             <field name="x_voucher" />
         </xpath>
@@ -52,5 +51,3 @@
     </field>
   </record>
 </odoo>
-
-

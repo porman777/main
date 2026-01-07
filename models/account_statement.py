@@ -6,6 +6,8 @@ class AccountStatementWizard(models.TransientModel):
     _name = "account.statement.wizard"
     _description = "Statement of Account Wizard"
 
+
+    
     @api.model
     def action_generate_all_due_statements(self):
         """Generate SOA for all customers with due invoices."""

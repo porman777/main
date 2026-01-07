@@ -3,6 +3,9 @@ from odoo import models, fields, api
 class Account(models.Model):
     _inherit = "account.move"
 
+
+
+
     x_invoice_type = fields.Selection(
         [
             ('service', 'Service'),

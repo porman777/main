@@ -21,7 +21,6 @@ class BIRModel(models.Model):
     image_url = fields.Char(string="Image URL")
     action_id = fields.Many2one('ir.actions.act_window', string="Action")
 
-
     
     def open_action(self):
         self.ensure_one()

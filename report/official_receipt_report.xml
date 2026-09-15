@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <!-- QWeb Template: Official Receipt -->
+  <template id="report_custom_official_receipt_template">
+    <t t-call="web.external_layout">
+      <t t-foreach="docs" t-as="doc">
+        <div class="page" style="font-family: Arial, sans-serif; font-size: 14px; line-height:1.4;">
+          <main>
+
+          <!-- CUSTOM COMPANY HEADER -->
+          <div style="text-align:center; margin-bottom:15px;">
+            <p style="font-size:20px; font-weight:bold; margin:0;">
+              <t t-esc="doc.company_id.name"/>
+            </p>
+            <p style="font-size:16px; margin:2px 0 0 0;">
+              Lot 1A Colours Town Center Alabang Zapote Road corner Marcos Alvarez Avenue
+            </p>
+            <p style="font-size:16px; margin:0;">
+              Talon Uno 1740 City of Las Pinas NCR Fourth District Philippines.
+            </p>
+            <p style="font-size:16px; margin:2px 0 0 0;">
+              VAT REG TIN: <t t-esc="doc.company_id.vat or ''"/>
+            </p>
+            <p style="font-size:16px; margin:2px 0 0 0;">
+              Telephone No.:8840-4821 <t t-esc="doc.company_id.phone or ''"/>
+            </p>
+          </div>
+            <!-- Receipt Header -->
+            <table style="width:100%; margin-bottom:15px; font-size:13px; border-collapse:collapse;">
+              <tr>
+                <td style="width:60%; vertical-align:top; padding:5px; border:1px solid black;">
+                  <strong style="font-size:18px;">OFFICIAL RECEIPT</strong><br/>
+                  <strong>OR NO.:</strong> <span t-field="doc.name"/><br/>
+                  <strong>BR:</strong> BR-00000-MAIN
+                </td>
+                <td style="width:40%; vertical-align:bottom; padding:5px; text-align:right; border:1px solid black;">
+                  <strong>OR Date:</strong> <span t-field="doc.date" t-options='{"format": "MMMM dd, yyyy"}'/><br/>
+                </td>
+              </tr>
+            </table>
+            <!-- CUSTOMER -->
+          <table style="width:100%; border:1px solid black; border-collapse:collapse;">
+            <tr>
+              <td style="border:1px solid black; padding:4px; width:20%;">Received From:</td>
+              <td style="border:1px solid black; padding:4px;" colspan="3">
+                <span t-field="doc.partner_id.name"/>
+              </td>
+            </tr>
+            <tr>
+              <td style="border:1px solid black; padding:4px;">Address:</td>
+              <td style="border:1px solid black; padding:4px;" colspan="3">
+                <span t-field="doc.partner_id.contact_address_complete"/>
+              </td>
+            </tr>
+            <tr>
+              <td style="border:1px solid black; padding:4px;">TIN:</td>
+              <td style="border:1px solid black; padding:4px;" colspan="3">
+                <span t-field="doc.partner_id.vat"/>
+              </td>
+            </tr>
+          </table>
+
+          <br/>
+
+          <!-- REFERENCE DETAILS -->
+          <table style="width:100%; border:1px solid black; border-collapse:collapse; font-size:11px;">
+            <thead>
+              <tr>
+                <th colspan="5" style="border:1px solid black; background:#d9d9d9; padding:4px;">
+                  REFERENCE DETAILS
+                </th>
+              </tr>
+              <tr>
+                <th style="border:1px solid black; background:#d9d9d9;">Reference Date</th>
+                <th style="border:1px solid black; background:#d9d9d9;">Reference Number</th>
+                <th style="border:1px solid black; background:#d9d9d9;">Reference Amount</th>
+                <th style="border:1px solid black; background:#d9d9d9;">CWT</th>
+                <th style="border:1px solid black; background:#d9d9d9;">Net Amount</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <t t-set="gross" t-value="0"/>
+              <t t-set="ewt_total" t-value="0"/>
+
+              <t t-foreach="doc.reconciled_invoice_ids" t-as="inv">
+                <t t-set="gross" t-value="gross + inv.amount_total"/>
+                <t t-set="ewt" t-value="sum(l.balance for l in inv.line_ids if '2307' in (l.account_id.name or ''))"/>
+                <t t-set="ewt_total" t-value="ewt_total + abs(ewt)"/>
+
+                <tr style="height:18px;">
+                  <td style="border:1px solid black; padding:3px;"><span t-field="inv.invoice_date"/></td>
+                  <td style="border:1px solid black; padding:3px;"><span t-field="inv.name"/></td>
+
+                  <td style="border:1px solid black; padding:3px; text-align:right;">
+                    <span t-field="inv.amount_total" t-options='{"widget":"monetary","display_currency":doc.currency_id}'/>
+                  </td>
+
+                  <td style="border:1px solid black; padding:3px; text-align:right;">
+                    <span t-esc="abs(ewt)"/>
+                  </td>
+
+                  <td style="border:1px solid black; padding:3px; text-align:right;">
+                    <span t-esc="inv.amount_total - abs(ewt)"/>
+                  </td>
+                </tr>
+              </t>
+
+              <!-- EMPTY ROWS -->
+              <t t-foreach="range(6)" t-as="i">
+                <tr style="height:18px;">
+                  <td style="border:1px solid black;"></td>
+                  <td style="border:1px solid black;"></td>
+                  <td style="border:1px solid black;"></td>
+                  <td style="border:1px solid black;"></td>
+                  <td style="border:1px solid black;"></td>
+                </tr>
+              </t>
+            </tbody>
+
+            <tfoot>
+              <tr style="background:#e6e6e6; font-weight:bold;">
+                <td colspan="2" style="border:1px solid black; padding:4px;">TOTAL</td>
+                <td style="border:1px solid black; text-align:right;"><span t-esc="gross"/></td>
+                <td style="border:1px solid black; text-align:right;"><span t-esc="ewt_total"/></td>
+                <td style="border:1px solid black; text-align:right;"><span t-esc="gross - ewt_total"/></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <br/>
+
+          <!-- AMOUNT IN WORDS -->
+          <p>
+            <strong>Amount in Words:</strong>
+            ***<span t-esc="doc.currency_id.amount_to_text(doc.amount)"/> ONLY***
+          </p>
+
+          <!-- PAYMENT DETAILS -->
+          <table style="width:100%; border:1px solid black; border-collapse:collapse; font-size:11px;">
+            <thead>
+              <tr>
+                <th colspan="4" style="border:1px solid black; background:#d9d9d9;">PAYMENT DETAILS</th>
+              </tr>
+              <tr>
+                <th style="border:1px solid black; background:#d9d9d9;">BANK NAME</th>
+                <th style="border:1px solid black; background:#d9d9d9;">CHECK DATE</th>
+                <th style="border:1px solid black; background:#d9d9d9;">CHECK NUMBER</th>
+                <th style="border:1px solid black; background:#d9d9d9;">CHECK AMOUNT</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr style="height:18px;">
+                <td style="border:1px solid black;"></td>
+                <td style="border:1px solid black;"></td>
+                <td style="border:1px solid black;"></td>
+                <td style="border:1px solid black;"></td>
+              </tr>
+
+              <tr>
+                <td colspan="3" style="border:1px solid black;">Total</td>
+                <td style="border:1px solid black; text-align:right;">0.00</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <br/>
+
+          <!-- ACCOUNT TITLE -->
+          <table style="width:100%; border:1px solid black; border-collapse:collapse; font-size:11px;">
+            <thead>
+              <tr>
+                <th style="border:1px solid black; background:#d9d9d9;">ACCOUNT TITLE</th>
+                <th style="border:1px solid black; background:#d9d9d9;">DEBIT</th>
+                <th style="border:1px solid black; background:#d9d9d9;">CREDIT</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td style="border:1px solid black; padding:4px;">Cash on Hand</td>
+                <td style="border:1px solid black; text-align:right;">
+                  <span t-field="doc.amount"/>
+                </td>
+                <td style="border:1px solid black;"></td>
+              </tr>
+
+              <tr>
+                <td style="border:1px solid black; padding:4px;">
+                  Creditable Tax Withheld At Source - Receivable (2307)
+                </td>
+                <td style="border:1px solid black; text-align:right;">
+                  <span t-esc="ewt_total"/>
+                </td>
+                <td style="border:1px solid black;"></td>
+              </tr>
+
+              <tr>
+                <td style="border:1px solid black; padding:4px;">Accounts Receivable</td>
+                <td style="border:1px solid black;"></td>
+                <td style="border:1px solid black; text-align:right;">
+                  <span t-esc="gross"/>
+                </td>
+              </tr>
+            </tbody>
+
+            <tfoot>
+              <tr style="background:#e6e6e6; font-weight:bold;">
+                <td style="border:1px solid black;">Total</td>
+                <td style="border:1px solid black; text-align:right;"><span t-esc="gross"/></td>
+                <td style="border:1px solid black; text-align:right;"><span t-esc="gross"/></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <br/><br/>
+
+          <!-- SIGNATURE -->
+          <table style="width:100%; text-align:center;">
+            <tr>
+              <td>
+                ___________________________<br/>
+                Cashier/Collector's Signature
+              </td>
+              <td>
+                ___________________________<br/>
+                Customer's Signature
+              </td>
+            </tr>
+          </table>
+
+          <br/>
+
+          <!-- FOOTER -->
+          <p style="text-align:center; font-size:10px;">
+            THIS DOCUMENT IS NOT VALID FOR CLAIM OF INPUT TAX
+          </p>
+
+          </main>
+        </div>
+      </t>
+    </t>
+  </template>
+
+  <!-- REPORT ACTION for account.payment -->
+  <record id="action_report_custom_official_receipt" model="ir.actions.report">
+    <field name="name">Official Receipt</field>
+    <field name="model">account.payment</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">itc_internal_dev.report_custom_official_receipt_template</field>
+    <field name="print_report_name">'Collection Receipt - %s' % (object.name)</field>
+    <field name="binding_model_id" ref="account.model_account_payment"/>
+    <field name="binding_type">report</field>
+  </record>
+</odoo>

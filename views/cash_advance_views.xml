@@ -1,0 +1,273 @@
+<odoo>  
+    <record id="view_cash_advance_kanban" model="ir.ui.view">
+        <field name="name">cash.advance.kanban</field>
+        <field name="model">cash.advance</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="amount_requested"/>
+                <field name="balance"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <strong><field name="name"/></strong><br/>
+                                <field name="employee_id"/><br/>
+                                Requested: <field name="amount_requested"/><br/>
+                                Balance: <field name="balance"/>
+                            </div>
+                            <div class="oe_kanban_footer">
+                                <field name="status"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+ 
+    <record id="view_cash_advance_list" model="ir.ui.view">
+        <field name="name">cash.advance.list</field>
+        <field name="model">cash.advance</field>
+        <field name="arch" type="xml">
+            <list decoration-primary="status == 'draft'"
+                    decoration-warning="status in ('for_approval','finance_approval')"
+                    decoration-success="status in ('approved','liquidated')"
+                    decoration-info="status == 'released'"
+                    decoration-danger="status == 'cancelled'" 
+            >
+
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="request_date"/>
+                <field name="amount_requested"/>
+                <field name="amount_released"/>
+                <field name="balance"/>
+
+                <field name="status" widget="badge"
+                    decoration-primary="status == 'draft'"
+                    decoration-warning="status in ('for_approval','finance_approval')"
+                    decoration-success="status in ('approved','liquidated')"
+                    decoration-info="status == 'released'"
+                    decoration-danger="status == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+   
+    <record id="view_cash_advance_form" model="ir.ui.view">
+        <field name="name">cash.advance.form</field>
+        <field name="model">cash.advance</field>
+        <field name="arch" type="xml">
+            <form string="Cash Advance">
+                <header>
+                        <!-- Draft -->
+                        <button string="Submit"
+                                type="object"
+                                name="action_submit"
+                                class="btn-primary"
+                                invisible="status != 'draft'"/>
+
+                        <!-- Manager Approval -->
+                        <button string="Manager Approve"
+                                type="object"
+                                name="action_manager_approve"
+                                class="btn-success"
+                                invisible="status != 'for_approval'"/>
+
+                        <!-- Finance Approval -->
+                        <button string="Finance Approve"
+                                type="object"
+                                name="action_finance_approve"
+                                class="btn-success"
+                                invisible="status != 'finance_approval'"/>
+
+                        <!-- Approved -->
+                        <button string="Release Funds"
+                                type="object"
+                                name="action_release"
+                                class="btn-primary"
+                                invisible="status != 'approved'"/>
+
+                        <!-- Released -->
+                        <button string="Submit Liquidation"
+                                type="object"
+                                name="action_submit_liquidation"
+                                class="btn-warning"
+                                invisible="status != 'released'"/>
+
+                        <!-- For Liquidation -->
+                        <button string="Confirm Liquidation"
+                                type="object"
+                                name="action_liquidate"
+                                class="btn-success"
+                                invisible="status != 'for_liquidation'"/>
+
+                        <!-- Cancel -->
+                        <button string="Cancel"
+                                type="object"
+                                name="action_cancel"
+                                class="btn-danger"
+                                invisible="status not in ('draft','for_approval','finance_approval','approved','released','for_liquidation')"/>
+
+                        <!-- Reset -->
+                        <button string="Reset to Draft"
+                                type="object"
+                                name="action_draft"
+                                class="btn-secondary"
+                                invisible="status != 'cancelled'"/>
+
+                        <!-- Print -->
+                        <button string="Print Cash Advance"
+                                type="action"
+                                name="%(action_report_cash_advance)d"
+                                class="btn-secondary"
+                                invisible="status not in ('released','for_liquidation','liquidated')"/>
+
+                        <!-- Statusbar -->
+                        <field name="status" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+
+                        <!-- Liquidated -->
+                        <button name="action_liquidate" type="object" class="oe_stat_button" icon="fa-check-circle" disabled="1">
+                            <field name="amount_liquidated" widget="statinfo" string="Liquidated"/>
+                        </button>
+
+                        <!-- Released -->
+                        <button name="action_release" type="object" class="oe_stat_button" icon="fa-sign-out" disabled="1">
+                            <field name="amount_released" widget="statinfo" string="Released"/>
+                        </button>
+
+                        <!-- Balance -->
+                        <button name="action_submit" type="object" class="oe_stat_button" icon="fa-balance-scale" disabled="1">
+                            <field name="balance" widget="statinfo" string="Balance"/>
+                        </button>
+
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="employee_id" readonly="status != 'draft'"/>
+                            <field name="request_date" readonly="status != 'draft'"/>
+                            <field name="amount_requested" readonly="status != 'draft'"/>
+                            <!-- <field name="amount_released" readonly="1"/>
+                            <field name="amount_liquidated" readonly="1"/>
+                            <field name="balance" readonly="1"/> -->
+                    
+                        </group>
+                        <group>
+                            <field name="advance_account_id" domain="[('account_type','=','asset_current'), ('deprecated','=',False)]" readonly="status != 'draft'"/>
+                            <field name="journal_id" readonly="status != 'draft'"/>
+                            <field name="purpose" readonly="status != 'draft'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Liquidation Lines">
+                            <field name="liquidation_line_ids">
+                                <list editable="bottom">
+                                    <field name="date"/>
+                                    <field name="description"/>
+                                    <field name="reference"/>
+                                    <field name="amount"/>
+                                </list>
+                            </field>
+                        </page>
+                        
+                    </notebook>
+                </sheet>
+                <chatter />
+            </form>
+        </field>
+    </record>
+
+    <!-- 
+    <record id="view_cash_advance_search" model="ir.ui.view">
+        <field name="name">cash.advance.search</field>
+        <field name="model">cash.advance</field>
+        <field name="arch" type="xml">
+            <search string="Search Cash Advances">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="status"/>
+
+                <separator/>
+
+                <filter string="Draft" domain="[('status','=','draft')]"/>
+                <filter string="For Approval" domain="[('status','=','for_approval')]"/>
+                <filter string="Finance Approval" domain="[('status','=','finance_approval')]"/>
+                <filter string="Approved" domain="[('status','=','approved')]"/>
+                <filter string="Released" domain="[('status','=','released')]"/>
+                <filter string="For Liquidation" domain="[('status','=','for_liquidation')]"/>
+                <filter string="Liquidated" domain="[('status','=','liquidated')]"/>
+                <filter string="Cancelled" domain="[('status','=','cancelled')]"/>
+            </search>
+        </field>
+    </record> -->
+    
+    <record id="view_cash_advance_liquidation_list" model="ir.ui.view">
+        <field name="name">cash.advance.liquidation.line.list</field>
+        <field name="model">cash.advance.liquidation.line</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="cash_advance_id"/>
+                <field name="date"/>
+                <field name="description"/>
+                <field name="reference"/>
+                <field name="amount"/>
+                
+            </list>
+        </field>
+    </record>
+
+    <record id="view_cash_advance_liquidation_form" model="ir.ui.view">
+        <field name="name">cash.advance.liquidation.line.form</field>
+        <field name="model">cash.advance.liquidation.line</field>
+        <field name="arch" type="xml">
+            <form string="Liquidation Line">
+                <sheet>
+                    <group>
+                        <field name="cash_advance_id"/>
+                        <field name="date"/>
+                        <field name="description"/>
+                        <field name="reference"/>
+                        <field name="amount"/>
+                        <field name="attachment"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+  
+    <record id="action_cash_advance_kanban" model="ir.actions.act_window">
+        <field name="name">Cash Advances</field>
+        <field name="res_model">cash.advance</field>
+        <field name="view_mode">list,kanban,form</field>
+        <!-- <field name="search_view_id" ref="view_cash_advance_search"/> -->
+    </record>
+
+    <record id="action_cash_advance_liquidation_list" model="ir.actions.act_window">
+        <field name="name">Liquidation Lines</field>
+        <field name="res_model">cash.advance.liquidation.line</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+ 
+    <record id="action_cash_advance_reports" model="ir.actions.act_window">
+        <field name="name">Cash Advance Reports</field>
+        <field name="res_model">cash.advance</field>
+        <field name="view_mode">pivot,graph,list</field>
+    </record>
+
+    <menuitem id="menu_cash_advance_root" name="Cash Advance" web_icon="fa-money"/>
+    <menuitem id="menu_cash_advance_management" name="Cash Advances" parent="menu_cash_advance_root" action="action_cash_advance_kanban"/>
+    <menuitem id="menu_cash_advance_liquidation" name="Liquidation Lines" parent="menu_cash_advance_root" action="action_cash_advance_liquidation_list"/>
+    <menuitem id="menu_cash_advance_reports" name="Reports" parent="menu_cash_advance_root" action="action_cash_advance_reports"/>
+
+</odoo>

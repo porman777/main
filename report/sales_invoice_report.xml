@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="custom_report_sales_invoice">
+    <t t-call="web.external_layout">
+      <t t-foreach="docs" t-as="doc">
+        <div class="page" style="font-family: Arial, sans-serif; font-size: 14px; line-height:1.4;">
+          <main>
+
+            <!-- Invoice Header -->
+            <table style="width:100%; margin-bottom:15px; font-size:13px; border-collapse:collapse;">
+              <tr>
+                <td style="width:60%; vertical-align:top; padding:5px; border:1px solid black;">
+                  <strong style="font-size:18px;">SALES INVOICE</strong><br/>
+                  <strong>SI NO.:</strong> <t t-esc="doc.invoice_origin or ''"/><br/>
+                  <strong>BR:</strong> BR-00000-MAIN
+                </td>
+                <td style="width:40%; vertical-align:bottom; padding:5px; text-align:right; border:1px solid black;">
+                  <strong>SI Date:</strong> <t t-esc="doc.invoice_date or ''"/><br/>
+                  <strong>Term:</strong> <t t-esc="doc.invoice_payment_term_id.name or ''"/><br/>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Customer Information -->
+            <table style="width:100%; border:1px solid black; border-collapse:collapse; font-size:12px; margin-bottom:15px;">
+              <tr>
+                <td style="border:1px solid black; padding:5px; width:25%;"><strong>Sold To:</strong></td>
+                <td style="border:1px solid black; padding:5px;" colspan="3"><t t-esc="doc.partner_id.name or ''"/></td>
+              </tr>
+              <tr>
+                <td style="border:1px solid black; padding:5px;"><strong>Address:</strong></td>
+                <td style="border:1px solid black; padding:5px;" colspan="3"><t t-esc="doc.partner_id.street or ''"/></td>
+              </tr>
+              <tr>
+                <td style="border:1px solid black; padding:5px;"><strong>TIN:</strong></td>
+                <td style="border:1px solid black; padding:5px;"><t t-esc="doc.partner_id.vat or ''"/></td>
+                <td style="border:1px solid black; padding:5px;"><strong>Business Style/Trade Name:</strong></td>
+                <td style="border:1px solid black; padding:5px;"><t t-esc="doc.partner_id.name or ''"/></td>
+              </tr>
+              <tr>
+                <td style="border:1px solid black; padding:5px;"><strong>Delivery/Shipped to:</strong></td>
+                <td style="border:1px solid black; padding:5px;" colspan="3"><t t-esc="doc.partner_shipping_id.street or ''"/></td>
+              </tr>
+              <tr>
+                <td style="border:1px solid black; padding:5px;"><strong>Reference:</strong></td>
+                <td style="border:1px solid black; padding:5px;" colspan="3"><t t-esc="doc.ref or ''"/></td>
+              </tr>
+            </table>
+
+            <!-- Invoice Lines Table -->
+            <table style="width:100%; border:1px solid black; border-collapse:collapse; font-size:12px; margin-bottom:15px;">
+              <thead style="background:#f0f0f0;">
+                <tr>
+                  <th style="border:1px solid black; padding:5px; text-align:left;">Description</th>
+                  <th style="border:1px solid black; padding:5px; width:50px;">Qty</th>
+                  <th style="border:1px solid black; padding:5px; width:50px;">Unit</th>
+                  <th style="border:1px solid black; padding:5px; width:80px; text-align:right;">Unit Price</th>
+                  <th style="border:1px solid black; padding:5px; width:80px; text-align:right;">Total</th>
+                  <th style="border:1px solid black; padding:5px; width:80px; text-align:right;">Discount</th>
+                  <th style="border:1px solid black; padding:5px; width:100px; text-align:right;">Net Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="doc.invoice_line_ids" t-as="line">
+                  <td style="border:1px solid black; padding:5px;"><t t-esc="line.name or ''"/></td>
+                  <td style="border:1px solid black; padding:5px; text-align:center;"><t t-esc="'{:,.2f}'.format(line.quantity or 0)"/></td>
+                  <td style="border:1px solid black; padding:5px; text-align:center;"><t t-esc="line.product_uom_id.name or ''"/></td>
+                  <td style="border:1px solid black; padding:5px; text-align:right;">
+                    <t t-esc="doc.currency_id.symbol"/><t t-esc="'{:,.2f}'.format(line.price_unit or 0)"/>
+                  </td>
+                  <td style="border:1px solid black; padding:5px; text-align:right;">
+                    <t t-esc="doc.currency_id.symbol"/><t t-esc="'{:,.2f}'.format((line.price_unit or 0) * (line.quantity or 0))"/>
+                  </td>
+                  <td style="border:1px solid black; padding:5px; text-align:right;">
+                    <t t-esc="'{:,.2f}'.format(line.discount or 0)"/>%
+                  </td>
+                  <td style="border:1px solid black; padding:5px; text-align:right;">
+                    <t t-esc="doc.currency_id.symbol"/><t t-esc="'{:,.2f}'.format(line.price_subtotal or 0)"/>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="6" style="border:1px solid black; padding:5px; text-align:right; font-weight:bold;">TOTAL</td>
+                  <td style="border:1px solid black; padding:5px; text-align:right; font-weight:bold;">
+                    <t t-esc="doc.currency_id.symbol"/><t t-esc="'{:,.2f}'.format(doc.amount_untaxed or 0)"/>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <!-- Totals Section -->
+            <table style="width:100%; border:1px solid black; border-collapse:collapse; font-size:12px; margin-bottom:15px;">
+              <tr>
+                <td rowspan="5" style="width:65%; padding:8px; vertical-align:top; border:1px solid black;">
+                  <p><strong>Amount in words:</strong> <span t-esc="doc.currency_id.amount_to_text(doc.amount_total)"/></p>
+                  <p><strong>Terms and Conditions</strong></p>
+                  <ol style="margin:0; padding-left:15px; font-size:11px;">
+                    <li>Our liability for loss or damage ceases after delivery to the carrier in good order and condition.</li>
+                    <li>This invoice is payable on demand, unless otherwise agreed upon.</li>
+                    <li>The merchandise remains the property of the company until it is fully paid.</li>
+                    <li>Interest will be charged on all overdue accounts.</li>
+                    <li>In case of non-payment, the court of seller will have jurisdiction and the buyer agrees to pay attorney’s fees and court costs resulting therefrom.</li>
+                  </ol>
+                </td>
+                <td style="padding:5px; text-align:right; border:1px solid black;">VATable:</td>
+                <td style="padding:5px; text-align:right; border:1px solid black;">
+                  <t t-esc="doc.currency_id.symbol"/><t t-esc="'{:,.2f}'.format(doc.amount_untaxed or 0)"/>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:5px; text-align:right; border:1px solid black;">Zero Rated:</td>
+                <td style="padding:5px; text-align:right; border:1px solid black;"><t t-esc="doc.currency_id.symbol"/>0.00</td>
+              </tr>
+              <tr>
+                <td style="padding:5px; text-align:right; border:1px solid black;">Exempt:</td>
+                <td style="padding:5px; text-align:right; border:1px solid black;"><t t-esc="doc.currency_id.symbol"/>0.00</td>
+              </tr>
+              <tr>
+                <td style="padding:5px; text-align:right; border:1px solid black;">VAT:</td>
+                <td style="padding:5px; text-align:right; border:1px solid black;">
+                  <t t-esc="doc.currency_id.symbol"/><t t-esc="'{:,.2f}'.format(doc.amount_tax or 0)"/>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:5px; text-align:right; border:1px solid black; font-weight:bold;">Amount Due:</td>
+                <td style="padding:5px; text-align:right; border:1px solid black; font-weight:bold;">
+                  <t t-esc="doc.currency_id.symbol"/><t t-esc="'{:,.2f}'.format(doc.amount_total or 0)"/>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Signatories -->
+            <table style="width:100%; font-size:12px; text-align:center; margin-top:20px;">
+              <tr>
+                <td style="border:1px solid black;">Prepared By:</td>
+                <td style="border:1px solid black;">Checked/Approved By:</td>
+                <td style="border:1px solid black;">Received By:</td>
+              </tr>
+              <tr style="height:50px;">
+                <td style="border:1px solid black;"></td>
+                <td style="border:1px solid black;"></td>
+                <td style="border:1px solid black;"></td>
+              </tr>
+              <tr>
+                <td style="font-size:11px; border:1px solid black;">Signature over Printed Name</td>
+                <td style="font-size:11px; border:1px solid black;">Signature over Printed Name</td>
+                <td style="font-size:11px; border:1px solid black;">Signature over Printed Name</td>
+              </tr>
+            </table>
+
+           <!--  <div style="font-size:10px; margin-top:20px;">
+              <p>
+                Printed By: InnovaThink Corporation (Open Edition - Tax Based Accounting System) <br/>
+                Acknowledgment Certificate No.: <br/>
+                Acknowledgment Certificate Date Issued: <br/>
+                Permitted Series Range: SA-000000000001 - SA-999999999999
+              </p>
+            </div>
+ -->
+          </main>
+        </div>
+      </t>
+    </t>
+  </template>
+
+  <!-- REPORT ACTION -->
+  <record id="report_sales_invoice_account_move" model="ir.actions.report">
+    <field name="name">Sales Invoice</field>
+    <field name="model">account.move</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">itc_internal_dev.custom_report_sales_invoice</field>
+    <field name="print_report_name">'Sales Invoice - %s' % (object.invoice_origin or '')</field>
+    <field name="binding_model_id" ref="account.model_account_move"/>
+    <field name="binding_type">report</field>
+  </record>
+</odoo>

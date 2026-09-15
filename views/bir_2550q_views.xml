@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- BIR Form 2550Q Views for Odoo 18 -->
+<odoo>
+    <data>
+
+        <!-- ==================== TREE VIEW ==================== -->
+        <record id="view_bir_2550q_tree" model="ir.ui.view">
+            <field name="name">bir.2550q.tree</field>
+            <field name="model">bir.2550q</field>
+            <field name="arch" type="xml">
+                <list string="BIR 2550Q Returns" 
+                      decoration-info="state=='draft'" 
+                      decoration-success="state=='filed'" 
+                      decoration-muted="state=='cancelled'">
+                    <field name="name"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="year_ended"/>
+                    <field name="quarter"/>
+                    <field name="return_period_from"/>
+                    <field name="return_period_to"/>
+                    <field name="total_amount_payable" widget="monetary"/>
+                    <field name="state" widget="badge" 
+                           decoration-info="state=='draft'" 
+                           decoration-success="state in ('confirmed','filed')"
+                           decoration-muted="state=='cancelled'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ==================== FORM VIEW ==================== -->
+        <record id="view_bir_2550q_form" model="ir.ui.view">
+            <field name="name">bir.2550q.form</field>
+            <field name="model">bir.2550q</field>
+            <field name="arch" type="xml">
+                <form string="BIR Form 2550Q">
+
+                    <!-- ========== HEADER WITH BUTTONS ========== -->
+                    <header>
+                        <button name="action_generate_data" 
+                                string="Generate Data" 
+                                type="object" 
+                                class="oe_highlight"
+                                invisible="state != 'draft'"/>
+                        <button name="action_confirm" 
+                                string="Confirm" 
+                                type="object" 
+                                class="oe_highlight"
+                                invisible="state != 'draft'"/>
+                        <button name="action_file" 
+                                string="Mark as Filed" 
+                                type="object" 
+                                class="oe_highlight"
+                                invisible="state != 'confirmed'"/>
+                        
+                        <button name="action_cancel" 
+                                string="Cancel" 
+                                type="object"
+                                invisible="state in ('cancelled','filed')"/>
+                        <button name="action_set_draft" 
+                                string="Reset to Draft" 
+                                type="object"
+                                invisible="state != 'cancelled'"/>
+                        <field name="state" widget="statusbar" 
+                               statusbar_visible="draft,confirmed,filed,cancelled"/>
+                    </header>
+
+                    <sheet>
+                       <div class="oe_button_box" name="button_box">
+                            <button name="action_generate_pdf" 
+                                    type="object" 
+                                    class="oe_stat_button" 
+                                    icon="fa-print">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_text">Print</span>
+                                    <span class="o_stat_text">Report</span>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- ========== PART I - BACKGROUND INFO ========== -->
+                        <group string="Part I - Background Information">
+                            <group>
+                                <field name="company_id" />
+                                <field name="taxpayer_classification"/>
+                                <field name="year_ended"/>
+                                <field name="quarter"/>
+                                <field name="is_tax_relief"
+                                    string="Are you availing of tax relief under Special Law or International Tax Treaty?"/>
+                                <field name="tax_relief_specify"
+                                    string="If yes, specify"
+                                    readonly="not is_tax_relief"/>
+                            </group>
+                            <group>
+                                <field name="return_period_from" readonly="1"/>
+                                <field name="return_period_to" readonly="1"/>
+                                <field name="is_amended"/>
+                                <field name="is_short_period"/>
+                                <field name="rdo_code"/>
+                            </group>
+                        </group>
+
+                        <!-- ========== SCHEDULES NOTEBOOK ========== -->
+                        <notebook>
+
+                            <!-- Part II - Tax Payable -->
+                            <page string="Part II - Tax Payable">
+                                <group>
+                                    <group>
+                                        <field name="net_vat_payable"/>
+                                        <field name="creditable_vat_withheld"/>
+                                        <field name="advance_vat_payments"/>
+                                        <field name="vat_paid_prev_return_18" />
+                                        <field name="other_credits_19"/>
+                                        <field name="total_tax_credits_20"/>
+                                    </group>
+                                    <group>
+                                        <field name="tax_still_payable_21"/>
+                                        <field name="surcharge_22"/>
+                                        <field name="interest_23"/>
+                                        <field name="compromise_24"/>
+                                        <field name="total_penalties"/>
+                                        <field name="total_amount_payable" class="oe_highlight"/>
+                                    </group>
+                                </group>
+
+                                <group>
+                                    <group string="Tax Agent / Attorney">
+                                        <field name="tax_accreditation_no"/>
+                                        <field name="date_of_issue"/>
+                                        <field name="expirt_date"/>
+                                    </group>
+                                    <group string="Signature">
+                                        <field name="for_individuals"/>
+                                        <field name="for_non_individuals"/>
+                                    </group>
+                                </group>
+                                
+                            </page>
+
+                            <!-- PART III: DETAILS OF PAYMENT -->
+                            <page string="Part III – Payment Details">
+
+                                <group string="27 - Cash/Bank Debit Advice">
+                                    <group>
+                                        <field name="cash_bank_drawee" string="Drawee Bank/Agency"/>
+                                        <field name="cash_bank_number" string="Number"/>
+                                    </group>
+                                    <group>
+                                        <field name="cash_bank_date" string="Date"/>
+                                        <field name="cash_bank_amount" string="Amount"/>
+                                    </group>
+                                </group>
+
+                                <group string="28 - Check">
+                                    <group>
+                                        <field name="check_drawee" string="Drawee Bank/Agency"/>
+                                        <field name="check_number" string="Number"/>
+                                    </group>
+                                    <group>
+                                        <field name="check_date" string="Date"/>
+                                        <field name="check_amount" string="Amount"/>
+                                    </group>
+                                </group>
+
+                                <group string="29 - Tax Debit Memo">
+                                    <group>
+                                        <field name="tdm_number" string="Number"/>
+                                    </group>
+                                    <group>
+                                        <field name="tdm_date" string="Date"/>
+                                        <field name="tdm_amount" string="Amount"/>
+                                    </group>
+                                </group>
+
+                                <group string="30 - Others (Specify below)">
+                                    <group>
+                                        <field name="others_particulars" string="Specify"/>
+                                        <field name="others_drawee" string="Drawee Bank/Agency"/>
+                                        <field name="others_number" string="Number"/>
+                                    </group>
+                                    <group>
+                                        <field name="others_date" string="Date"/>
+                                        <field name="others_amount" string="Amount"/>
+                                    </group>
+                                </group>
+
+                                <!-- Machine Validation / ROR Details -->
+                                <group string="Machine Validation / Revenue Official Receipt (ROR) Details">
+                                    <field name="machine_validation_details" 
+                                        placeholder="Machine Validation / Revenue Official Receipt Details" 
+                                        colspan="2"/>
+                                </group>
+
+                                <group string="Stamp of Receiving Office/AAB">
+                                    <field name="receiving_stamp_details" 
+                                        placeholder="Stamp of Receiving Office/AAB and Date of Receipt" 
+                                        colspan="2"/>
+                                </group>
+
+                            </page>
+
+                            <!-- Part IV - VAT Computation -->
+                            <page string="Part IV - VAT Computation">
+                                <group>
+                                    <group string="Sales and Output Tax">
+                                        <field name="vatable_sales"/>
+                                        <field name="output_tax_31b"/>
+                                        <field name="zero_rated_sales"/>
+                                        <field name="exempt_sales"/>
+                                        <field name="total_adjusted_output_tax" class="oe_highlight"/>
+                                    </group>
+                                    <group string="Input Tax">
+                                        <field name="input_tax_carried_over"/>
+                                        <field name="input_tax_deferred_39"/>
+                                        <field name="transitional_input_tax"/>
+                                        <field name="presumptive_input_tax"/>
+                                        <field name="other_input_tax_42"/>
+                                        <field name="total_current_purchases"/>
+                                        <field name="total_current_input_tax"/>
+                                        <field name="total_available_input_tax"/>
+                                        <field name="total_allowable_input_tax" class="oe_highlight"/>
+                                    </group>
+                                </group>
+                                <group string="Current Transactions">
+                                    <group string="Purchases">
+                                        <field name="nonresident_services_45a" string="45A Services Rendered by Non-Residents" widget="monetary"/>
+                                        <field name="importations_46a" string="46A Importations" widget="monetary"/>
+                                        <field name="other_purchases_47a" string="47A Others (Specify)" widget="monetary"/>
+                                        <field name="domestic_no_input_48" string="48 Domestic Purchases with No Input Tax" widget="monetary"/>
+                                        <field name="vat_exempt_importations_49" string="49 VAT-Exempt Importations" widget="monetary"/>
+                                    </group>
+                                    <group string="Input Tax">
+                                        <field name="nonresident_input_tax_45b" string="45B Non-Resident Input Tax" widget="monetary"/>
+                                        <field name="importations_input_tax_46b" string="46B Importations Input Tax" widget="monetary"/>
+                                        <field name="other_input_tax_47b" string="47B Other Input Tax" widget="monetary"/>
+                                        <field name="capital_goods_deferred_52" string="52 Input Tax on Capital Goods Deferred" widget="monetary"/>
+                                        <field name="input_tax_exempt_sales_53" string="53 Input Tax Attributable to VAT Exempt Sales" widget="monetary"/>
+                                        <field name="vat_refund_tcc_54" string="54 VAT Refund/TCC Claimed" widget="monetary"/>
+                                        <field name="input_vat_unpaid_55" string="55 Input VAT on Unpaid Payables" widget="monetary"/>
+                                        <field name="other_deductions_56" string="56 Other Deductions" widget="monetary"/>
+                                        <field name="total_deductions_57" string="57 Total Deductions from Input Tax" widget="monetary"/>
+                                        <field name="input_vat_settled_58" string="58 Input VAT on Settled Unpaid Payables" widget="monetary"/>
+                                        <field name="adjusted_deductions_59" string="59 Adjusted Deductions from Input Tax" widget="monetary"/>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <!-- Part V - Schedules -->
+                            <page string="Part V - Schedules">
+
+                                <!-- Schedule 1 - Amortized Input Tax from Capital Goods -->
+                                <group string="Schedule 1 - Amortized Input Tax from Capital Goods">
+
+                                    <!-- Row 1 -->
+                                    <group string="Row 1">
+                                        <group>
+                                            <field name="capital_goods_date_1"/>
+                                            <field name="capital_goods_source_1"/>
+                                            <field name="capital_goods_description_1"/>
+                                        </group>
+
+                                        <group>
+                                            <field name="capital_goods_amount_1"/>
+                                            <field name="capital_goods_balance_1"/>
+                                            <field name="capital_goods_estimated_life_1"/>
+                                        </group>
+
+                                        <group>
+                                            <field name="capital_goods_recognized_life_1"/>
+                                            <field name="capital_goods_allowable_1"/>
+                                            <field name="capital_goods_balance_cf_1"/>
+                                        </group>
+                                    </group>
+
+                                    <!-- Row 2 -->
+                                    <group string="Row 2">
+                                        <group>
+                                            <field name="capital_goods_date_2"/>
+                                            <field name="capital_goods_source_2"/>
+                                            <field name="capital_goods_description_2"/>
+                                        </group>
+
+                                        <group>
+                                            <field name="capital_goods_amount_2"/>
+                                            <field name="capital_goods_balance_2"/>
+                                            <field name="capital_goods_estimated_life_2"/>
+                                        </group>
+
+                                        <group>
+                                            <field name="capital_goods_recognized_life_2"/>
+                                            <field name="capital_goods_allowable_2"/>
+                                            <field name="capital_goods_balance_cf_2"/>
+                                        </group>
+                                    </group>
+
+                                </group>
+                                <group string="Schedule 2 - Input Tax Attributable to VAT Exempt Sales">
+                                    <field name="input_tax_direct_exempt_51"/>
+                                    <field name="input_tax_ratable_157"/>
+                                    <field name="input_tax_exempt_sales_53"/>
+                                </group>
+
+                                <!-- Schedule 3 - Creditable VAT Withheld -->
+                                <group string="Schedule 3 - Creditable VAT Withheld">
+
+                                    <!-- Row 1 -->
+                                    <group string="Row 1">
+                                        <field name="creditable_vat_period_1"/>
+                                        <field name="creditable_vat_agent_1"/>
+                                        <field name="creditable_vat_income_1"/>
+                                        <field name="creditable_vat_withheld_1"/>
+                                    </group>
+
+                                    <!-- Row 2 -->
+                                    <group string="Row 2">
+                                        <field name="creditable_vat_period_2"/>
+                                        <field name="creditable_vat_agent_2"/>
+                                        <field name="creditable_vat_income_2"/>
+                                        <field name="creditable_vat_withheld_2"/>
+                                    </group>
+
+                                    <!-- Row 3 -->
+                                    <group string="Row 3">
+                                        <field name="creditable_vat_period_3"/>
+                                        <field name="creditable_vat_agent_3"/>
+                                        <field name="creditable_vat_income_3"/>
+                                        <field name="creditable_vat_withheld_3"/>
+                                    </group>
+
+                                    <!-- Total -->
+                                    <group string="Total">
+                                        <field name="creditable_vat_withheld" class="oe_highlight"/>
+                                    </group>
+                                </group>
+                                <!-- Schedule 4 - Advance VAT Payment -->
+                                <group string="Schedule 4 - Advance VAT Payment">
+
+                                    <!-- Row 1 -->
+                                    <group string="Row 1">
+                                        <field name="advance_vat_period_1"/>
+                                        <field name="advance_vat_miller_1"/>
+                                        <field name="advance_vat_taxpayer_1"/>
+                                        <field name="advance_vat_amount_1"/>
+                                    </group>
+
+                                    <!-- Row 2 -->
+                                    <group string="Row 2">
+                                        <field name="advance_vat_period_2"/>
+                                        <field name="advance_vat_miller_2"/>
+                                        <field name="advance_vat_taxpayer_2"/>
+                                        <field name="advance_vat_or_number_2"/>
+                                        <field name="advance_vat_amount_2"/>
+                                    </group>
+
+                                </group>
+
+                            </page>
+
+                            
+
+                        </notebook>
+
+                    </sheet>
+
+                    <chatter/>
+
+                </form>
+            </field>
+        </record>
+
+        <!-- ==================== SEARCH VIEW ==================== -->
+        <record id="view_bir_2550q_search" model="ir.ui.view">
+            <field name="name">bir.2550q.search</field>
+            <field name="model">bir.2550q</field>
+            <field name="arch" type="xml">
+                <search string="BIR 2550Q Returns">
+                    <!-- Search Fields -->
+                    <field name="company_id"/>
+                    <field name="quarter"/>
+                    <field name="return_period_from"/>
+                    <field name="return_period_to"/>
+                    
+                    <!-- Filters -->
+                    <filter string="Amended" name="amended" domain="[('is_amended','=',True)]"/>
+                    <filter string="Short Period" name="short_period" domain="[('is_short_period','=',True)]"/>
+                    
+                    <!-- Group By -->
+                    <group expand="0" string="Group By">
+                        <filter string="Company" name="group_company" context="{'group_by': 'company_id'}"/>
+                        <filter string="Quarter" name="group_quarter" context="{'group_by': 'quarter'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+
+        <!-- ==================== ACTION ==================== -->
+        <record id="action_bir_2550q" model="ir.actions.act_window">
+            <field name="name">BIR 2550Q Returns</field>
+            <field name="res_model">bir.2550q</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{'search_default_draft':1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first BIR 2550Q Quarterly VAT Return.
+                </p>
+                <p>
+                    Fill in background info and click "Generate Data" to aggregate VAT values automatically.
+                </p>
+            </field>
+        </record>
+
+        <!-- ==================== SEQUENCE ==================== -->
+        <record id="sequence_bir_2550q" model="ir.sequence">
+            <field name="name">BIR 2550Q Sequence</field>
+            <field name="code">bir.2550q</field>
+            <field name="prefix">2550Q/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="implementation">standard</field>
+        </record>
+
+    </data>
+</odoo>

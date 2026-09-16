@@ -32,7 +32,3 @@ class BIRModel(models.Model):
         return False
 
 
-
-
-
-
